@@ -91,29 +91,6 @@
         .jump-btn:hover{background:var(--police-blue);color:#fff;}
         .badge-complete{background:var(--police-green);color:white;padding:2px 10px;border-radius:12px;font-size:11px;}
         .case-open-badge{background:var(--police-blue);color:white;padding:2px 10px;border-radius:12px;font-size:11px;margin-left:8px;}
-        .dialogue-container{background:#f8fafc;border:1px solid var(--police-border);border-radius:8px;padding:16px;margin:12px 0;max-height:400px;overflow-y:auto;}
-        .dialogue-msg{margin:8px 0;padding:10px 14px;border-radius:8px;max-width:85%;}
-        .dialogue-msg.player{background:#dbeafe;margin-left:auto;border-bottom-right-radius:4px;}
-        .dialogue-msg.npc{background:#f3f4f6;margin-right:auto;border-bottom-left-radius:4px;}
-        .dialogue-msg .speaker{font-weight:bold;font-size:12px;color:var(--police-gray);margin-bottom:2px;}
-        .dialogue-msg .text{font-size:14px;line-height:1.7;}
-        .dialogue-msg .evd-ref{font-size:11px;color:var(--police-blue);margin-top:4px;padding:2px 8px;background:rgba(0,71,171,0.08);border-radius:4px;display:inline-block;}
-        .dialogue-input-area{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
-        .dialogue-input-area select{flex:1;min-width:150px;padding:10px 14px;border:1px solid var(--police-border);border-radius:6px;font-size:14px;background:#fff;}
-        .dialogue-input-area button{padding:10px 24px;background:var(--police-blue);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;transition:all 0.2s;}
-        .dialogue-input-area button:hover{background:#003380;}
-        .dialogue-person-select{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
-        .dialogue-person-select .person-btn{padding:6px 16px;border:2px solid var(--police-border);border-radius:20px;background:#fff;cursor:pointer;transition:all 0.2s;font-size:13px;}
-        .dialogue-person-select .person-btn:hover{border-color:var(--police-blue);background:#e6f0ff;}
-        .dialogue-person-select .person-btn.active{border-color:var(--police-blue);background:#dbeafe;font-weight:bold;}
-        .dialogue-hint{font-size:12px;color:var(--police-gray);padding:8px 0;}
-        .quiz-option{display:block;padding:10px 16px;margin:6px 0;border:1px solid var(--police-border);border-radius:6px;cursor:pointer;transition:all 0.2s;background:#fff;}
-        .quiz-option:hover{background:#e6f0ff;border-color:var(--police-blue);}
-        .quiz-option.selected{background:#dbeafe;border-color:var(--police-blue);}
-        .quiz-option.correct{background:#d1fae5;border-color:var(--police-green);}
-        .quiz-option.wrong{background:#fee2e2;border-color:var(--police-red);}
-        .conclusion-box{border:1px solid var(--police-green);background:rgba(5,150,105,0.08);padding:20px;border-radius:6px;margin-top:20px;display:none;}
-        .conclusion-box.show{display:block;}
         .hint-text{color:var(--police-gray);font-size:13px;margin:8px 0;}
         .clue-list{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;}
         .clue-badge{display:inline-block;padding:4px 12px;border-radius:12px;font-size:12px;background:#e5e7eb;color:#374151;}
@@ -135,6 +112,13 @@
         .clue-tag-person{background:#fce7f3;color:#9d174d;}
         .clue-tag-place{background:#d1fae5;color:#065f46;}
         .clue-overview-card .quiz-answer{font-size:12px;color:var(--police-green);padding:2px 0;}
+        .quiz-option{display:block;padding:10px 16px;margin:6px 0;border:1px solid var(--police-border);border-radius:6px;cursor:pointer;transition:all 0.2s;background:#fff;}
+        .quiz-option:hover{background:#e6f0ff;border-color:var(--police-blue);}
+        .quiz-option.selected{background:#dbeafe;border-color:var(--police-blue);}
+        .quiz-option.correct{background:#d1fae5;border-color:var(--police-green);}
+        .quiz-option.wrong{background:#fee2e2;border-color:var(--police-red);}
+        .conclusion-box{border:1px solid var(--police-green);background:rgba(5,150,105,0.08);padding:20px;border-radius:6px;margin-top:20px;display:none;}
+        .conclusion-box.show{display:block;}
         @media (max-width:768px){.police-container{grid-template-columns:1fr;}.police-sidebar{display:flex;flex-wrap:wrap;padding:8px;border-right:none;border-bottom:1px solid var(--police-border);}.sidebar-module{flex:1;min-width:100px;}}
         @media (max-width:480px){.login-box{padding:32px 20px;}.police-header{padding:10px 16px;}.police-logo h1{font-size:15px;}.police-workspace{padding:12px;}.work-card{padding:16px;}}
     </style>
@@ -187,8 +171,7 @@
             <button class="sidebar-btn" data-mod="finished" onclick="switchModule('finished')">✅ 已办结</button></div>
         <div class="sidebar-module"><div class="sidebar-title">侦查模块</div>
             <button class="sidebar-btn" data-mod="search" onclick="switchModule('search')">🔍 线索搜索</button>
-            <button class="sidebar-btn" data-mod="clues" onclick="switchModule('clues')">📋 已获线索</button>
-            <button class="sidebar-btn" data-mod="dialogue" onclick="switchModule('dialogue')">💬 讯问对话</button></div>
+            <button class="sidebar-btn" data-mod="clues" onclick="switchModule('clues')">📋 已获线索</button></div>
         <div class="sidebar-module"><div class="sidebar-title">研判结案</div>
             <button class="sidebar-btn" data-mod="quiz" onclick="switchModule('quiz')">📝 结案问答</button>
             <button class="sidebar-btn" data-mod="report" onclick="switchModule('report')">📄 结案报告</button></div>
@@ -203,7 +186,7 @@
             <div class="case-archive-grid" id="archiveGrid"></div></div></div>
         <div id="mod-finished" class="module"><div class="work-card"><div class="card-title">✅ 办结归档</div><div id="finishedList" style="color:var(--police-gray);text-align:center;padding:40px 0;">暂无办结卷宗</div></div></div>
         <div id="mod-search" class="module"><div class="work-card"><div class="card-title"><span>🔍 线索搜索 · 凭记忆检索</span><span id="searchProgress" style="font-size:13px;color:var(--police-gray);font-weight:normal;"></span></div>
-            <div class="jump-bar"><button class="jump-btn" onclick="switchModule('clues')">→ 已获线索</button><button class="jump-btn" onclick="switchModule('dialogue')">→ 讯问对话</button><button class="jump-btn" onclick="switchModule('quiz')">→ 结案问答</button></div>
+            <div class="jump-bar"><button class="jump-btn" onclick="switchModule('clues')">→ 已获线索</button><button class="jump-btn" onclick="switchModule('quiz')">→ 结案问答</button></div>
             <div id="initialInfoContainer"></div>
             <div class="hint-text">💡 搜索物证、人物或地点。</div>
             <div class="search-container">
@@ -218,25 +201,14 @@
             </div>
         </div></div>
         <div id="mod-clues" class="module"><div class="work-card"><div class="card-title">📋 已获线索 <span id="clueCount" style="font-size:13px;color:var(--police-gray);font-weight:normal;"></span></div>
-            <div class="jump-bar"><button class="jump-btn" onclick="switchModule('search')">→ 搜索</button><button class="jump-btn" onclick="switchModule('dialogue')">→ 讯问对话</button><button class="jump-btn" onclick="switchModule('quiz')">→ 结案问答</button></div>
+            <div class="jump-bar"><button class="jump-btn" onclick="switchModule('search')">→ 搜索</button><button class="jump-btn" onclick="switchModule('quiz')">→ 结案问答</button></div>
             <div id="cluesEmpty" style="color:var(--police-gray);text-align:center;padding:40px 0;">尚未发现任何线索</div>
             <div id="cluesList"></div>
             <div class="progress-bar"><div class="progress-fill" id="clueProgressFill" style="width:0%"></div></div>
             <div style="text-align:right;font-size:12px;color:var(--police-gray);" id="clueProgressText">0 / 0 线索已发现</div>
         </div></div>
-        <div id="mod-dialogue" class="module"><div class="work-card"><div class="card-title">💬 讯问对话 · 出示物证对质 <span id="dialogueTitle" style="font-size:13px;color:var(--police-gray);font-weight:normal;"></span></div>
-            <div class="jump-bar"><button class="jump-btn" onclick="switchModule('search')">→ 搜索</button><button class="jump-btn" onclick="switchModule('clues')">→ 已获线索</button><button class="jump-btn" onclick="switchModule('quiz')">→ 结案问答</button></div>
-            <div id="dialogueEmpty" style="color:var(--police-gray);text-align:center;padding:40px 0;">请先搜索并记录人物线索</div>
-            <div id="dialoguePersonSelect" class="dialogue-person-select"></div>
-            <div id="dialogueContainer" class="dialogue-container" style="display:none;"></div>
-            <div id="dialogueInputArea" class="dialogue-input-area" style="display:none;">
-                <select id="dialogueEvdSelect"><option value="">— 选择物证 —</option></select>
-                <button onclick="sendDialogue()">📤 出示物证</button>
-            </div>
-            <div id="dialogueHint" class="dialogue-hint"></div>
-        </div></div>
         <div id="mod-quiz" class="module"><div class="work-card"><div class="card-title">📝 结案问答 <span id="quizTitle" style="font-size:13px;color:var(--police-gray);font-weight:normal;"></span></div>
-            <div class="jump-bar"><button class="jump-btn" onclick="switchModule('search')">→ 搜索</button><button class="jump-btn" onclick="switchModule('clues')">→ 已获线索</button><button class="jump-btn" onclick="switchModule('dialogue')">→ 讯问对话</button></div>
+            <div class="jump-bar"><button class="jump-btn" onclick="switchModule('search')">→ 搜索</button><button class="jump-btn" onclick="switchModule('clues')">→ 已获线索</button></div>
             <div id="quizEmpty" style="color:var(--police-gray);text-align:center;padding:40px 0;">完成全部调查后解锁</div>
             <div id="quizContent"></div>
             <div style="margin-top:16px;"><button class="police-btn" style="background:var(--police-green);color:#fff;border:none;padding:9px 20px;border-radius:4px;cursor:pointer;font-size:13px;font-weight:500;" id="submitQuizBtn" style="display:none;" onclick="submitQuiz()">📤 提交答案</button></div>
@@ -275,7 +247,14 @@ function doLogin() {
     if(saveData.currentCase !== -1 && saveData.currentCase !== undefined) {
         currentCID = saveData.currentCase;
         currentCaseData = getCase(currentCID);
+        // 打开案件时清空线索（每次打开新案件重新开始收集）
+        saveData.foundClues = [];
+        saveProgress();
     }
+    renderSearch();
+    renderClues();
+    renderQuiz();
+    renderReport();
 }
 
 function doLogout() {
@@ -299,12 +278,10 @@ var saveData = JSON.parse(localStorage.getItem('policeCaseArchiveSave')) || {
     clear: [],
     currentCase: -1,
     foundClues: [],
-    dialogueRecords: {},
     quizAnswers: {}
 };
 var currentCID = -1;
 var currentCaseData = null;
-var currentDialoguePerson = null;
 
 // ========== 全案件数据库 ==========
 var caseDB = {
@@ -329,7 +306,7 @@ var caseDB = {
             { id: "e11", name: "秋雨名品登记记录", desc: "二手店登记簿", detail: "登记显示FENDI双肩包由'楚慈'寄存销售。" }
         ],
         persons: [
-            { id: "p0", name: "胡伟胜", role: "冷库经营者/丁当男友", desc: "丁当的男友，黑桃K下线。对花生严重过敏。" },
+            { id: "p0", name: "胡伟胜", role: "丁当男友", desc: "丁当的男友，黑桃K下线。对花生严重过敏。" },
             { id: "p2", name: "丁当", role: "制毒团伙成员/胡伟胜女友", desc: "用仿制蓝金失败品给冯宇光试毒。真实情感指向楚慈。" },
             { id: "p3", name: "冯宇光", role: "死者", desc: "化工厂实习生，为考博购买'聪明药'。" },
             { id: "p4", name: "杨媚", role: "不夜宫KTV老板/江停线人", desc: "江停的线人。对外宣称是江停'未婚妻'。" },
@@ -339,13 +316,6 @@ var caseDB = {
             { id: "l0", name: "不夜宫KTV·后厨冷库", desc: "案发现场" },
             { id: "l1", name: "秋雨名品二手店", desc: "双肩包被销赃处" }
         ],
-        dialogueResponses: {
-            "p0": { "e5": "（搓手，欲言又止）我...我对花生过敏这件事，除了警局内部的人，没几个人知道..." },
-            "p2": { "e4": "（低头，声音发颤）那东西是我调出来的...我没想到他会死...", "e6": "（声音越来越小）我和胡伟胜...是我爸逼我的。我喜欢的人...是楚慈。" },
-            "p4": { "e7": "（抽了口烟）江停那小子，躲在这儿的时候可没少给我惹麻烦。", "e8": "（叹气）我对外说是他未婚妻...是为了给他打掩护。" },
-            "p5": { "e11": "（神色平静地推了推眼镜）那个包...是冯宇光放在我这里的。他让我帮他卖掉。" }
-        },
-        defaultResponse: "（对方支支吾吾）我不太清楚...",
         quiz: [
             { q: "死者冯宇光的真实死因是什么？", options: ["单纯低温冻死", "蓝金类毒物致幻后冻死", "被谋杀后抛尸", "意外窒息"], correct: 1 },
             { q: "谁给死者提供了毒品？", options: ["胡伟胜", "丁当", "杨媚", "严峫"], correct: 1 },
@@ -359,11 +329,11 @@ var caseDB = {
         desc:"红心Q仪式复刻，步薇策划的'考验'",
         initialInfo: {
             deathScene: "陵州荒野山区，绑架现场。受害者申晓奇、步薇被绑架，绑匪索要两亿赎金。",
-            bodyCondition: "受害者被捆绑、蒙眼，现场有血衣照片。步薇肩窝有红色小痣。",
+            bodyCondition: "犯罪分子邮递血衣。步薇肩窝有红色小痣。",
             keyFacts: "1.申晓奇组织野营，二人被绑架；2.江停分析：行刑才是主要目的；3.步薇是实际策划者；4.黑桃K幼年心理创伤是仪式根源。"
         },
         evd: [
-            {id:"e12", name:"血衣照片", desc:"浸透鲜血的T恤照片", detail:"绑匪寄给家属的勒索物证。"},
+            {id:"e12", name:"血衣照片", desc:"浸透鲜血的T恤", detail:"绑匪寄给家属的勒索物证。"},
             {id:"e13", name:"勒索电话录音", desc:"绑匪索要两亿赎金", detail:"江停分析：行刑才是主要目的。"},
             {id:"e14", name:"肩窝红痣", desc:"步薇肩窝的红色小痣", detail:"系筛选目标女孩标志。"},
             {id:"e15", name:"李雨欣口供", desc:"'仲夏夜茫，七月未央'", detail:"揭示每年七月中旬的固定时间窗口。"},
@@ -373,17 +343,11 @@ var caseDB = {
             {id:"e19", name:"黑桃K心理创伤", desc:"黑桃K幼年与江停共同被绑架", detail:"救援时他推开江停先获救，内心一直认为是'背叛'。"}
         ],
         persons: [
-            {id:"p6", name:"步薇", role:"绑架案受害者/实际策划者", desc:"实际策划绑架申晓奇。模仿江停，目标是成为'红心Q'。最终跳江自杀。"},
+            {id:"p6", name:"步薇", role:"绑架案受害者/实际策划者", desc:"实际策划绑架申晓奇。模仿江停，目标是成为'红心Q'。试图模仿李雨欣那起案件。最终跳江自杀。"},
             {id:"p7", name:"汪兴业", role:"绑架执行人/步薇叔叔", desc:"有恋足癖，被步薇利用。事后被黑桃K灭口。"},
             {id:"p8", name:"黑桃K（闻劭）", role:"跨国毒枭组织首脑", desc:"幕后根源。幼年与江停共同被绑架，内心有'背叛'心理创伤。"}
         ],
         places: [{id:"l2", name:"陵州荒野山区", desc:"绑架案发生地"}],
-        dialogueResponses: {
-            "p6": {"e14":"（低头）这颗痣...从小就有的。","e16":"（低声）她能做到的...我也能做到。我就是下一个'红心Q'。"},
-            "p7": {"e17":"（低头承认）我...我确实有那方面的癖好。但步薇说的那些事，是她在利用我。"},
-            "p8": {"e19":"（冷笑）二十年前山崖上那一推...我一直在想，如果当初我没有推开江停，结局会不会不一样。"}
-        },
-        defaultResponse:"（对方沉默）我不知道你在说什么。",
         quiz:[
             {q:"619血衣绑架案的真正策划者是谁？", options:["黑桃K","汪兴业","步薇","申晓奇"], correct:2},
             {q:"步薇策划绑架申晓奇的目的是什么？", options:["勒索赎金","通过'考验'成为红心Q","报复申晓奇","帮助汪兴业"], correct:1},
@@ -397,7 +361,7 @@ var caseDB = {
         initialInfo: {
             deathScene: "建宁内河码头，死者被锐器高位压制刺杀。",
             bodyCondition: "现场发现97%高纯度乌毒结晶。",
-            keyFacts: "1.现场发现97%高纯度乌毒结晶；2.码头监控被高层权限删除；3.现场发现43码定制皮鞋鞋印，与秦川完全吻合；4.秦川真正想除掉的目标是黑桃K。"
+            keyFacts: "1.现场发现97%高纯度乌毒结晶；2.码头监控被高层权限删除；3.现场发现43码定制皮鞋鞋印。"
         },
         evd: [
             {id:"e20", name:"97%高纯度乌毒结晶", desc:"跨境原生批次毒品", detail:"确认大型分销节点。"},
@@ -411,10 +375,6 @@ var caseDB = {
             {id:"p9", name:"秦川", role:"建宁禁毒支队副支队长/黑桃K内应", desc:"现场鞋印吻合，监控被其删除。亦正亦邪，真正想除掉的目标是黑桃K。"}
         ],
         places: [{id:"l3", name:"建宁内河码头", desc:"乌毒凶杀案现场"}],
-        dialogueResponses: {
-            "p9": {"e20":"（眼神闪烁）我只是路过巡查...","e23":"（低头沉默良久）鞋印...确实是我的。","e24":"（沉默良久）我活到现在，唯一想杀的人就是闻劭。你们信也好，不信也罢。","e25":"（苦笑）严峫那傻子...我从来没想过害他。"}
-        },
-        defaultResponse:"（对方避开视线）这...我不好说。",
         quiz:[
             {q:"现场发现的43码定制皮鞋鞋印属于谁？", options:["严峫","秦川","黑桃K","胡伟胜"], correct:1},
             {q:"秦川真实想除掉的目标是谁？", options:["严峫","江停","黑桃K","胡伟胜"], correct:2},
@@ -449,12 +409,6 @@ var caseDB = {
             {id:"l4", name:"恭州城郊废弃化工厂", desc:"爆炸发生地"},
             {id:"l5", name:"瑶山工厂", desc:"S省瑶山地下制毒基地"}
         ],
-        dialogueResponses: {
-            "p10": {"e26":"（神色平静）红心Q...是吴吞给我的。他以为我是他的人，但我想端掉整个组织。","e31":"（靠在椅背上）我不是什么失踪卧底。我是主动打进去的。草花A需要一个'红心Q'，而我需要他的信任。"},
-            "p8": {"e28":"（眼神阴冷）吴吞是我父亲。瑶山工厂是他的，蓝金是他的，红心Q也是他的。但他死了，一切就是我的。"},
-            "p13": {"e29":"（审讯室灯光下低头）恭州的事...是我把江停的行动信息传出去的。但我没想到他们会用爆炸..."}
-        },
-        defaultResponse: "（对方沉默片刻）这与我了解的情况不太一样。",
         quiz: [
             {q:"红心Q代号属于谁？", options:["黑桃K","江停","草花A","方片J"], correct:1},
             {q:"蓝金毒品生产基地位于哪里？", options:["岚山工厂","瑶山工厂","恭州工厂","建宁工厂"], correct:1},
@@ -487,11 +441,6 @@ var caseDB = {
             {id:"p16", name:"鲨鱼", role:"暗网'马里亚纳海沟'头目", desc:"幕后黑手。"}
         ],
         places: [{id:"l6", name:"津海四里河", desc:"年小萍被杀现场"}],
-        dialogueResponses: {
-            "p14": {"t4":"（握紧拳头）他们找到我了...'画师'还活着的消息已经在暗网传开了。"},
-            "p15": {"t2":"（皱眉）年小萍的死不是孤案。"}
-        },
-        defaultResponse:"（对方沉默）",
         quiz:[
             {q:"凶手佩戴的物品是什么？", options:["面具","骷髅头盔","头套","帽子"], correct:1},
             {q:"四里河骷髅案导致了什么严重后果？", options:["步重华被停职","吴雩'画师'身份暴露","秦川被捕","严峫受伤"], correct:1}
@@ -518,11 +467,6 @@ var caseDB = {
             {id:"p17", name:"解行", role:"警方卧底（已牺牲）", desc:"代号'探骊'，吴雩的表弟。"}
         ],
         places: [{id:"l7", name:"津海高档住宅区", desc:"密室杀人案现场"}],
-        dialogueResponses: {
-            "p14": {"t7":"（声音低沉）解行...他牺牲前把他的名字留给了我。他说，'阿归，你替我活下去。'"},
-            "p15": {"t6":"（神情严肃）我必须假装叛变，才能接近鲨鱼。"}
-        },
-        defaultResponse:"（对方低声）",
         quiz:[
             {q:"步重华在828案中做了什么？", options:["正式叛变","伪装'叛变'潜入暗网","逮捕张志兴","保护彭宛"], correct:1},
             {q:"解行牺牲后，吴雩继承了什么？", options:["财富","代号'画师'","蓝金配方","暗网权限"], correct:1}
@@ -548,11 +492,6 @@ var caseDB = {
             {id:"p16", name:"鲨鱼", role:"暗网头目", desc:"在矿井中被捕。"}
         ],
         places: [{id:"l8", name:"废弃矿井", desc:"终局之战发生地"}],
-        dialogueResponses: {
-            "p14": {"t9":"（在冰冷的矿井水中）结束了...鲨鱼。十二年了，一切终于结束了。"},
-            "p16": {"t9":"（绝望的声音）你...你到底是谁..."}
-        },
-        defaultResponse:"（对方神色复杂）",
         quiz:[
             {q:"谁亲手逮捕了'鲨鱼'？", options:["步重华","吴雩","秦川","严峫"], correct:1},
             {q:"矿井案结束后，吴雩的卧底身份如何？", options:["继续卧底","正式洗白","被逮捕","再次潜伏"], correct:1}
@@ -582,7 +521,6 @@ function switchModule(modId) {
     if(modId === 'finished') renderFinished();
     if(modId === 'search') renderSearch();
     if(modId === 'clues') renderClues();
-    if(modId === 'dialogue') renderDialogue();
     if(modId === 'quiz') renderQuiz();
     if(modId === 'report') renderReport();
     if(modId === 'overview') renderOverview();
@@ -631,13 +569,13 @@ function openCase(id) {
     saveData.currentCase = id;
     currentCID = id;
     currentCaseData = getCase(id);
-    if(!saveData.foundClues) saveData.foundClues = [];
-    if(!saveData.dialogueRecords) saveData.dialogueRecords = {};
+    // ===== 关键修复：打开新案件时清空线索 =====
+    saveData.foundClues = [];
+    saveData.quizAnswers = {};
     saveProgress();
     switchModule('search');
     renderSearch();
     renderClues();
-    renderDialogue();
     renderQuiz();
     renderReport();
     document.querySelectorAll('.sidebar-btn').forEach(function(b){ b.classList.remove('active'); });
@@ -656,7 +594,7 @@ function renderSearch() {
     }
     var c = getCase(cid);
     var found = saveData.foundClues || [];
-    var total = (c.evd ? c.evd.length : 0) + (c.persons ? c.persons.length : 0) + (c.places ? c.places.length : 0);
+    var total = getCaseTotalClues(c);
     var seriesLabel = c.series || '';
     title.textContent = '— ['+seriesLabel+'] '+c.title+' | 已发现 '+found.length+'/'+total+' 条线索';
     if(c.initialInfo) {
@@ -668,6 +606,10 @@ function renderSearch() {
     }
 }
 
+function getCaseTotalClues(c) {
+    return (c.evd ? c.evd.length : 0) + (c.persons ? c.persons.length : 0) + (c.places ? c.places.length : 0);
+}
+
 function performSearch() {
     var cid = saveData.currentCase;
     if(cid === -1 || cid === undefined) { alert('请先打开卷宗'); return; }
@@ -676,14 +618,12 @@ function performSearch() {
     var type = document.getElementById('searchType').value;
     if(!input) { alert('请输入搜索关键词'); return; }
     var resultDiv = document.getElementById('searchResult');
-    var found = false;
     var html = '';
     var matchedItems = [];
     if(type === 'all' || type === 'evd') {
         if(c.evd) {
             c.evd.forEach(function(e){
                 if(e.name.indexOf(input) !== -1 || input.indexOf(e.name) !== -1 || e.desc.indexOf(input) !== -1) {
-                    found = true;
                     var alreadyFound = (saveData.foundClues || []).indexOf('e'+e.id) !== -1;
                     matchedItems.push({ type:'evd', id:'e'+e.id, name:e.name, desc:e.desc, detail:e.detail, alreadyFound:alreadyFound });
                 }
@@ -694,7 +634,6 @@ function performSearch() {
         if(c.persons) {
             c.persons.forEach(function(p){
                 if(p.name.indexOf(input) !== -1 || input.indexOf(p.name) !== -1 || p.role.indexOf(input) !== -1) {
-                    found = true;
                     var alreadyFound = (saveData.foundClues || []).indexOf('p'+p.id) !== -1;
                     matchedItems.push({ type:'person', id:'p'+p.id, name:p.name, role:p.role, desc:p.desc, alreadyFound:alreadyFound });
                 }
@@ -705,7 +644,6 @@ function performSearch() {
         if(c.places) {
             c.places.forEach(function(l){
                 if(l.name.indexOf(input) !== -1 || input.indexOf(l.name) !== -1) {
-                    found = true;
                     var alreadyFound = (saveData.foundClues || []).indexOf('l'+l.id) !== -1;
                     matchedItems.push({ type:'place', id:'l'+l.id, name:l.name, desc:l.desc, alreadyFound:alreadyFound });
                 }
@@ -725,7 +663,7 @@ function performSearch() {
                 tagHtml = '<span class="tag tag-place">📍 地点</span>';
                 detailHtml = '<div style="font-size:13px;color:var(--police-gray);margin-top:4px;">'+item.desc+'</div>';
             }
-            var btnHtml = !item.alreadyFound ? '<div style="margin-top:6px;"><button class="police-btn" style="padding:4px 14px;font-size:12px;" onclick="addClue(\''+item.id+'\')">➕ 记录线索</button></div>' : '<div style="color:var(--police-green);font-size:12px;margin-top:4px;">✅ 已记录</div>';
+            var btnHtml = !item.alreadyFound ? '<div style="margin-top:6px;"><button class="police-btn" style="padding:4px 14px;font-size:12px;cursor:pointer;background:var(--police-blue);color:#fff;border:none;border-radius:4px;" onclick="addClue(\''+item.id+'\')">➕ 记录线索</button></div>' : '<div style="color:var(--police-green);font-size:12px;margin-top:4px;">✅ 已记录</div>';
             html += '<div class="result-item">'+tagHtml+' <span class="found">'+item.name+'</span> '+detailHtml+' '+btnHtml+'</div>';
         });
         resultDiv.innerHTML = html;
@@ -737,21 +675,41 @@ function performSearch() {
 function addClue(id) {
     if(!saveData.foundClues) saveData.foundClues = [];
     if(saveData.foundClues.indexOf(id) !== -1) return;
+    
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) {
+        alert('请先打开卷宗');
+        return;
+    }
+    var c = getCase(cid);
+    
+    // 校验线索是否属于当前案件
+    var belongsToCase = false;
+    var type = id[0];
+    var idx = id.substring(1);
+    if(type === 'e') {
+        belongsToCase = c.evd && c.evd.some(function(e) { return e.id === idx; });
+    } else if(type === 'p') {
+        belongsToCase = c.persons && c.persons.some(function(p) { return p.id === idx; });
+    } else if(type === 'l') {
+        belongsToCase = c.places && c.places.some(function(pl) { return pl.id === idx; });
+    }
+    if(!belongsToCase) {
+        alert('⚠️ 该线索不属于当前案件！');
+        return;
+    }
+    
     saveData.foundClues.push(id);
     saveProgress();
     renderSearch();
     renderClues();
-    renderDialogue();
     renderQuiz();
-    var cid = saveData.currentCase;
-    if(cid !== -1) {
-        var c = getCase(cid);
-        var total = (c.evd ? c.evd.length : 0) + (c.persons ? c.persons.length : 0) + (c.places ? c.places.length : 0);
-        if(saveData.foundClues.length >= total && total > 0) {
-            setTimeout(function(){
-                alert('🎉 所有线索已收集完毕！请前往「结案问答」完成推理。');
-            }, 300);
-        }
+    
+    var total = getCaseTotalClues(c);
+    if(saveData.foundClues.length >= total && total > 0) {
+        setTimeout(function(){
+            alert('🎉 所有线索已收集完毕！请前往「结案问答」完成推理。');
+        }, 300);
     }
 }
 
@@ -770,7 +728,7 @@ function renderClues() {
     }
     var c = getCase(cid);
     var found = saveData.foundClues || [];
-    var total = (c.evd ? c.evd.length : 0) + (c.persons ? c.persons.length : 0) + (c.places ? c.places.length : 0);
+    var total = getCaseTotalClues(c);
     count.textContent = '('+found.length+'/'+total+')';
     var pct = total > 0 ? (found.length/total)*100 : 0;
     if(progressFill) progressFill.style.width = pct + '%';
@@ -793,150 +751,7 @@ function renderClues() {
     list.innerHTML = html;
 }
 
-// ========== 讯问对话函数 ==========
-function renderDialogue() {
-    var cid = saveData.currentCase;
-    var empty = document.getElementById('dialogueEmpty');
-    var personSelect = document.getElementById('dialoguePersonSelect');
-    var container = document.getElementById('dialogueContainer');
-    var inputArea = document.getElementById('dialogueInputArea');
-    var hint = document.getElementById('dialogueHint');
-    var title = document.getElementById('dialogueTitle');
-    if(cid === -1 || cid === undefined) {
-        empty.style.display = 'block';
-        personSelect.innerHTML = '';
-        container.style.display = 'none';
-        inputArea.style.display = 'none';
-        title.textContent = '';
-        return;
-    }
-    var c = getCase(cid);
-    var found = saveData.foundClues || [];
-    title.textContent = '— ' + c.title;
-    var unlockedPersons = c.persons ? c.persons.filter(function(p){ return found.indexOf('p'+p.id) !== -1; }) : [];
-    if(unlockedPersons.length === 0) {
-        empty.style.display = 'block';
-        personSelect.innerHTML = '<div style="color:var(--police-gray);">请先搜索并记录人物线索</div>';
-        container.style.display = 'none';
-        inputArea.style.display = 'none';
-        hint.textContent = '';
-        return;
-    }
-    empty.style.display = 'none';
-    var personHtml = '';
-    unlockedPersons.forEach(function(p){
-        var active = currentDialoguePerson === p.id ? 'active' : '';
-        personHtml += '<button class="person-btn '+active+'" onclick="selectDialoguePerson(\''+p.id+'\')">'+p.name+'（'+p.role+'）</button>';
-    });
-    personSelect.innerHTML = personHtml;
-    if(!currentDialoguePerson || !unlockedPersons.some(function(p){ return p.id === currentDialoguePerson; })) {
-        if(unlockedPersons.length > 0) {
-            currentDialoguePerson = unlockedPersons[0].id;
-            var firstBtn = personSelect.querySelector('.person-btn');
-            if(firstBtn) firstBtn.classList.add('active');
-        }
-    }
-    var person = c.persons.find(function(p){ return p.id === currentDialoguePerson; });
-    if(person) {
-        container.style.display = 'block';
-        inputArea.style.display = 'flex';
-        hint.textContent = '💬 讯问 '+person.name+'。选择物证出示。';
-        var recordKey = cid + '_' + currentDialoguePerson;
-        var history = saveData.dialogueRecords[recordKey] || [];
-        var dialogHtml = '';
-        history.forEach(function(msg){
-            var cls = msg.speaker === 'player' ? 'player' : 'npc';
-            var speakerLabel = msg.speaker === 'player' ? '👤 你' : '👤 '+person.name;
-            dialogHtml += '<div class="dialogue-msg '+cls+'"><div class="speaker">'+speakerLabel+'</div><div class="text">'+msg.text+'</div>';
-            if(msg.evdRef) dialogHtml += '<div class="evd-ref">📎 出示物证：'+msg.evdRef+'</div>';
-            dialogHtml += '</div>';
-        });
-        if(history.length === 0) {
-            dialogHtml = '<div style="text-align:center;color:var(--police-gray);padding:20px 0;">选择物证开始讯问...</div>';
-        }
-        container.innerHTML = dialogHtml;
-        container.scrollTop = container.scrollHeight;
-        var evdSelect = document.getElementById('dialogueEvdSelect');
-        var availableEvds = found.filter(function(id){ return id[0] === 'e'; });
-        var options = '<option value="">— 选择物证 —</option>';
-        availableEvds.forEach(function(id){
-            var e = c.evd.find(function(ev){ return 'e'+ev.id === id; });
-            if(e) {
-                options += '<option value="'+id+'">'+e.name+'</option>';
-            }
-        });
-        evdSelect.innerHTML = options;
-    } else {
-        container.style.display = 'none';
-        inputArea.style.display = 'none';
-    }
-}
-
-function selectDialoguePerson(personId) {
-    currentDialoguePerson = personId;
-    renderDialogue();
-}
-
-function sendDialogue() {
-    var cid = saveData.currentCase;
-    if(cid === -1 || cid === undefined) {
-        alert('请先打开卷宗');
-        return;
-    }
-    var c = getCase(cid);
-    var evdSelect = document.getElementById('dialogueEvdSelect');
-    var evdId = evdSelect.value;
-    if(!evdId) {
-        alert('请选择物证');
-        return;
-    }
-    var personId = currentDialoguePerson;
-    if(!personId) {
-        alert('请选择对话对象');
-        return;
-    }
-    var person = c.persons ? c.persons.find(function(p) { return p.id === personId; }) : null;
-    if(!person) {
-        alert('对话对象不存在，请重新选择');
-        return;
-    }
-    var evd = c.evd ? c.evd.find(function(e) { return 'e' + e.id === evdId; }) : null;
-    if(!evd) {
-        alert('物证不存在');
-        return;
-    }
-    var recordKey = cid + '_' + personId;
-    if(!saveData.dialogueRecords) saveData.dialogueRecords = {};
-    if(!saveData.dialogueRecords[recordKey]) saveData.dialogueRecords[recordKey] = [];
-    var responses = c.dialogueResponses || {};
-    var personResponses = responses[personId] || {};
-    var reply = personResponses[evdId];
-    if(!reply) {
-        for(var key in personResponses) {
-            if(key === evdId || key === evd.name || key.indexOf(evdId) !== -1) {
-                reply = personResponses[key];
-                break;
-            }
-        }
-    }
-    if(!reply) {
-        reply = c.defaultResponse || '（对方沉默不语，似乎在回避问题）';
-    }
-    saveData.dialogueRecords[recordKey].push({ 
-        speaker: 'player', 
-        text: '我出示了「' + evd.name + '」', 
-        evdRef: evd.name 
-    });
-    saveData.dialogueRecords[recordKey].push({ 
-        speaker: 'npc', 
-        text: reply, 
-        evdRef: null 
-    });
-    saveProgress();
-    renderDialogue();
-}
-
-// ========== 结案问答 - 集齐所有线索后解锁 ==========
+// ========== 结案问答 ==========
 function renderQuiz() {
     var cid = saveData.currentCase;
     var empty = document.getElementById('quizEmpty');
@@ -954,7 +769,7 @@ function renderQuiz() {
     
     var c = getCase(cid);
     var found = saveData.foundClues || [];
-    var totalClues = (c.evd ? c.evd.length : 0) + (c.persons ? c.persons.length : 0) + (c.places ? c.places.length : 0);
+    var totalClues = getCaseTotalClues(c);
     var hasAllClues = found.length >= totalClues && totalClues > 0;
     
     if(saveData.clear.indexOf(cid) !== -1) {
@@ -1058,7 +873,7 @@ function renderReport() {
     updateProgress();
 }
 
-// ========== 线索总览模块 ==========
+// ========== 线索总览 ==========
 function renderOverview() {
     var container = document.getElementById('clueOverviewContainer');
     var html = '';
@@ -1101,7 +916,7 @@ function refreshLocalSave() {
     saveData = JSON.parse(localStorage.getItem('policeCaseArchiveSave')) || saveData;
     currentCID = saveData.currentCase;
     currentCaseData = currentCID !== -1 ? getCase(currentCID) : null;
-    renderArchive(); renderFinished(); renderSearch(); renderClues(); renderDialogue(); renderQuiz(); renderReport(); renderOverview();
+    renderArchive(); renderFinished(); renderSearch(); renderClues(); renderQuiz(); renderReport(); renderOverview();
     updateProgress();
     alert('✅ 已同步本地存档。');
 }
@@ -1109,9 +924,9 @@ function refreshLocalSave() {
 function clearAllSave() {
     if(!confirm('⚠️ 确定重置全部办案进度？此操作不可撤销！')) return;
     localStorage.removeItem('policeCaseArchiveSave');
-    saveData = { unlock: [true,false,false,false,false,false,false], clear: [], currentCase: -1, foundClues: [], dialogueRecords: {}, quizAnswers: {} };
-    currentCID = -1; currentCaseData = null; currentDialoguePerson = null;
-    renderArchive(); renderFinished(); renderSearch(); renderClues(); renderDialogue(); renderQuiz(); renderReport(); renderOverview();
+    saveData = { unlock: [true,false,false,false,false,false,false], clear: [], currentCase: -1, foundClues: [], quizAnswers: {} };
+    currentCID = -1; currentCaseData = null;
+    renderArchive(); renderFinished(); renderSearch(); renderClues(); renderQuiz(); renderReport(); renderOverview();
     updateProgress();
     alert('已重置全部进度。');
 }
@@ -1122,7 +937,14 @@ updateProgress();
 if(saveData.currentCase !== -1 && saveData.currentCase !== undefined) {
     currentCID = saveData.currentCase;
     currentCaseData = getCase(currentCID);
+    // 打开案件时清空线索
+    saveData.foundClues = [];
+    saveProgress();
 }
+renderSearch();
+renderClues();
+renderQuiz();
+renderReport();
 </script>
 </body>
 </html>

@@ -157,6 +157,15 @@
         .main-interrogation-box .target-select{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
         .main-interrogation-box .target-select select{flex:1;min-width:120px;padding:6px 12px;border:1px solid var(--police-border);border-radius:6px;font-size:13px;background:#fff;}
         .main-interrogation-box .target-select button{padding:6px 16px;background:var(--police-blue);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;}
+        .chat-room{background:#f8fbff;border:2px solid var(--police-purple);border-radius:12px;padding:16px;margin-top:16px;box-shadow:var(--card-shadow);}
+        .chat-room .chat-title{font-size:16px;font-weight:bold;color:var(--police-purple);margin-bottom:10px;}
+        .chat-room .chat-messages{max-height:200px;overflow-y:auto;margin-bottom:8px;}
+        .chat-room .chat-msg{background:#ffffff;border-radius:8px;padding:8px 14px;margin:4px 0;border-left:4px solid var(--police-purple);}
+        .chat-room .chat-msg .speaker{font-weight:bold;color:var(--police-purple);}
+        .chat-room .chat-input-group{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;}
+        .chat-room .chat-input-group input{flex:1;min-width:140px;padding:8px 14px;border:1px solid var(--police-border);border-radius:6px;font-size:13px;background:#fff;}
+        .chat-room .chat-input-group button{padding:8px 20px;background:var(--police-purple);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;}
+        .chat-room .chat-input-group button:hover{background:#5b2d8a;}
     </style>
 </head>
 <body>
@@ -170,11 +179,11 @@
         <div class="sub">破云 · 吞海 ｜ 全案件沉浸式探案 ｜ 内网 V2.6</div>
         <div class="input-group">
             <label>👤 警号 / 账号</label>
-            <input type="text" id="loginUser" placeholder="请输入警号或用户名" value="admin">
+            <input type="text" id="loginUser" placeholder="请输入警号或用户名" value="">
         </div>
         <div class="input-group">
             <label>🔒 密码</label>
-            <input type="password" id="loginPass" placeholder="请输入密码" value="0626" onkeydown="if(event.key==='Enter') doLogin()">
+            <input type="password" id="loginPass" placeholder="请输入密码" value="" onkeydown="if(event.key==='Enter') doLogin()">
         </div>
         <button class="login-btn" onclick="doLogin()">🔓 登 录 系 统</button>
         <div id="loginError" class="error-msg"></div>
@@ -207,7 +216,11 @@
             <button class="sidebar-btn" data-mod="finished" onclick="switchModule('finished')">✅ 已办结</button></div>
         <div class="sidebar-module"><div class="sidebar-title">侦查模块</div>
             <button class="sidebar-btn" data-mod="search" onclick="switchModule('search')">🔍 线索搜索</button>
-            <button class="sidebar-btn" data-mod="clues" onclick="switchModule('clues')">📋 已获线索</button></div>
+            <button class="sidebar-btn" data-mod="clues" onclick="switchModule('clues')">📋 已获线索</button>
+            <!-- 新增：审问对话 & 角色闲谈 -->
+            <button class="sidebar-btn" data-mod="interrogation" onclick="switchModule('interrogation')">🎙️ 审问对话</button>
+            <button class="sidebar-btn" data-mod="chat" onclick="switchModule('chat')">💬 角色闲谈</button>
+        </div>
         <div class="sidebar-module"><div class="sidebar-title">研判结案</div>
             <button class="sidebar-btn" data-mod="quiz" onclick="switchModule('quiz')">📝 结案问答</button>
             <button class="sidebar-btn" data-mod="report" onclick="switchModule('report')">📄 结案报告</button></div>
@@ -231,7 +244,7 @@
                         </div>
                     </div>
                     <div class="col">
-                        <div id="chatRoom" class="chat-room" style="background:#f8fbff;border:2px solid var(--police-purple);border-radius:12px;padding:16px;margin-top:16px;box-shadow:var(--card-shadow);">
+                        <div id="chatRoom" class="chat-room">
                             <div class="chat-title" style="font-size:16px;font-weight:bold;color:var(--police-purple);margin-bottom:10px;">💬 角色闲聊 <span style="font-size:12px;color:var(--police-gray);font-weight:normal;">— 与案件角色自由对话</span></div>
                             <div id="chatMessages" style="max-height:200px;overflow-y:auto;margin-bottom:8px;"><div style="color:var(--police-gray);padding:6px 0;">开始与角色对话吧。</div></div>
                             <div class="chat-input-group" style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
@@ -303,7 +316,49 @@
             <div style="text-align:right;font-size:12px;color:var(--police-gray);" id="clueProgressText">0 / 0 线索已发现</div>
         </div></div>
         
-        <!-- ===== 结案问答模块（更新为更有难度的问题） ===== -->
+        <!-- ===== 独立的审问对话模块 ===== -->
+        <div id="mod-interrogation" class="module">
+            <div class="work-card">
+                <div class="card-title">🎙️ 审问对话 <span style="font-size:13px;color:var(--police-gray);font-weight:normal;">— 与案件角色深入对话</span></div>
+                <div class="jump-bar"><button class="jump-btn" onclick="switchModule('search')">→ 线索搜索</button><button class="jump-btn" onclick="switchModule('chat')">→ 角色闲谈</button></div>
+                <div id="interrogationMainBox" class="interrogation-chat-box" style="border-color:var(--police-blue);">
+                    <div class="chat-title" style="color:var(--police-blue);">👤 审问室 <span style="font-size:12px;font-weight:normal;color:var(--police-gray);">— 选择角色开始</span></div>
+                    <div id="interrogationMainMessages" class="chat-messages" style="max-height:300px;">
+                        <div style="color:var(--police-gray);padding:6px 0;">选择一名角色开始审问。</div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+                        <select id="interrogationMainTarget" style="padding:6px 12px;border:1px solid var(--police-border);border-radius:6px;font-size:13px;background:#fff;flex:1;min-width:120px;">
+                            <option value="">— 选择角色 —</option>
+                        </select>
+                        <button onclick="startMainInterrogation()" style="padding:6px 16px;background:var(--police-blue);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;">开始审问</button>
+                    </div>
+                    <div class="chat-input-group">
+                        <input type="text" id="interrogationMainInput" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter') sendMainInterrogationMessage()" style="flex:1;min-width:140px;padding:8px 14px;border:1px solid var(--police-border);border-radius:6px;font-size:13px;background:#fff;">
+                        <button onclick="sendMainInterrogationMessage()" style="padding:8px 20px;background:var(--police-red);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;">询问</button>
+                    </div>
+                    <div id="interrogationMainClueHint" class="clue-hint" style="display:none;">💡 通过审问获得了新线索！尝试在搜索中使用关键词 "供述" 或 "证词" 来查找。</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== 独立的角色闲谈模块 ===== -->
+        <div id="mod-chat" class="module">
+            <div class="work-card">
+                <div class="card-title">💬 角色闲谈 <span style="font-size:13px;color:var(--police-gray);font-weight:normal;">— 与案件角色自由对话</span></div>
+                <div class="jump-bar"><button class="jump-btn" onclick="switchModule('search')">→ 线索搜索</button><button class="jump-btn" onclick="switchModule('interrogation')">→ 审问对话</button></div>
+                <div id="chatMainBox" class="chat-room" style="border-color:var(--police-purple);background:#f8fbff;">
+                    <div class="chat-title" style="font-size:16px;font-weight:bold;color:var(--police-purple);margin-bottom:10px;">💬 角色闲聊 <span style="font-size:12px;color:var(--police-gray);font-weight:normal;">— 与案件角色自由对话</span></div>
+                    <div id="chatMainMessages" style="max-height:300px;overflow-y:auto;margin-bottom:8px;background:#fff;border-radius:6px;padding:8px;">
+                        <div style="color:var(--police-gray);padding:6px 0;">开始与角色对话吧。</div>
+                    </div>
+                    <div class="chat-input-group" style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+                        <input type="text" id="chatMainInput" placeholder="输入你想说的话..." onkeydown="if(event.key==='Enter') sendMainChatMessage()" style="flex:1;min-width:140px;padding:8px 14px;border:1px solid var(--police-border);border-radius:6px;font-size:13px;background:#fff;">
+                        <button onclick="sendMainChatMessage()" style="padding:8px 20px;background:var(--police-purple);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;">发送</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div id="mod-quiz" class="module"><div class="work-card"><div class="card-title">📝 结案问答 <span id="quizTitle" style="font-size:13px;color:var(--police-gray);font-weight:normal;"></span></div>
             <div class="jump-bar"><button class="jump-btn" onclick="switchModule('search')">→ 搜索</button><button class="jump-btn" onclick="switchModule('clues')">→ 已获线索</button></div>
             <div id="quizEmpty" style="color:var(--police-gray);text-align:center;padding:40px 0;">完成全部调查后解锁</div>
@@ -357,8 +412,11 @@ function doLogin() {
     renderReport();
     renderParallel();
     renderChatRoom();
+    renderChatMain();
     renderInterrogationTargets();
     renderInterrogationMessages();
+    renderInterrogationMainTargets();
+    renderInterrogationMainMessages();
 }
 
 function doLogout() {
@@ -389,7 +447,7 @@ var saveData = JSON.parse(localStorage.getItem('policeCaseArchiveSave')) || {
 var currentCID = -1;
 var currentCaseData = null;
 
-// ========== 全案件数据库（增加新线索，更新问答为更有难度的问题） ==========
+// ========== 全案件数据库 ==========
 var caseDB = {
     0: {
         id: 0, series: "破云", title: "建宁502冷库剧毒冻尸案", tag: "tag-poyun", tagName: "破云·入门",
@@ -406,7 +464,7 @@ var caseDB = {
             { id: "e10", name: "冷库温度记录", desc: "冷库温度异常波动", detail: "显示有人在案发前频繁进出冷库。" }
         ],
         persons: [
-            { id: "p0", name: "胡伟胜", role: "冷库经营者/丁当男友", desc: "丁当的男友，黑桃K下线。" },
+            { id: "p0", name: "胡伟胜", role: "丁当男友", desc: "丁当的男友，黑桃K下线。" },
             { id: "p2", name: "丁当", role: "制毒团伙成员/胡伟胜女友", desc: "用仿制蓝金失败品给冯宇光试毒。" }
         ],
         places: [
@@ -491,7 +549,7 @@ var caseDB = {
             {id:"e28", name:"方片J的通讯记录", desc:"公安高层内奸与黑桃K的往来", detail:"证实方片J出卖了行动情报。"}
         ],
         persons: [
-            {id:"p10", name:"江停", role:"建宁刑侦支队长/红心Q", desc:"主动打入贩毒集团的双面卧底。"},
+            {id:"p10", name:"江停", role:"恭州市禁毒支队长/红心Q", desc:"主动打入贩毒集团的双面卧底。"},
             {id:"p8", name:"黑桃K（闻劭）", role:"跨国毒枭组织首脑", desc:"爆炸案幕后主使。"}
         ],
         places: [
@@ -617,6 +675,8 @@ function switchModule(modId) {
     if(modId === 'finished') renderFinished();
     if(modId === 'search') { renderSearch(); renderParallel(); renderInterrogationTargets(); renderInterrogationMessages(); }
     if(modId === 'clues') renderClues();
+    if(modId === 'interrogation') { renderInterrogationMainTargets(); renderInterrogationMainMessages(); }
+    if(modId === 'chat') { renderChatMain(); }
     if(modId === 'quiz') renderQuiz();
     if(modId === 'report') renderReport();
     if(modId === 'overview') renderOverview();
@@ -672,6 +732,7 @@ function openCase(id) {
     saveData.foundClues = [];
     saveData.quizAnswers = {};
     saveData.interrogationHistory = [];
+    saveData.chatHistory = [];
     saveProgress();
     
     switchModule('search');
@@ -682,6 +743,10 @@ function openCase(id) {
     renderParallel();
     renderInterrogationTargets();
     renderInterrogationMessages();
+    renderInterrogationMainTargets();
+    renderInterrogationMainMessages();
+    renderChatRoom();
+    renderChatMain();
     document.querySelectorAll('.sidebar-btn').forEach(function(b){ b.classList.remove('active'); });
     var btn = document.querySelector('.sidebar-btn[data-mod="search"]');
     if(btn) btn.classList.add('active');
@@ -847,14 +912,11 @@ function renderClues() {
     list.innerHTML = html;
 }
 
-// ========== 角色闲聊 ==========
+// ========== 角色闲聊 (归档中心) ==========
 function renderChatRoom() {
     var container = document.getElementById('chatRoom');
+    if(!container) return;
     var cid = saveData.currentCase;
-    if(cid === -1 || cid === undefined) {
-        return;
-    }
-    var c = getCase(cid);
     var chatHistory = saveData.chatHistory || [];
     var chatHtml = '<div class="chat-title" style="font-size:16px;font-weight:bold;color:var(--police-purple);margin-bottom:10px;">💬 角色闲聊 <span style="font-size:12px;color:var(--police-gray);font-weight:normal;">— 与案件角色自由对话</span></div>';
     chatHtml += '<div id="chatMessages" style="max-height:200px;overflow-y:auto;margin-bottom:8px;">';
@@ -894,10 +956,59 @@ function sendChatMessage() {
     saveData.chatHistory.push({ speaker: randomPerson.name, text: reply });
     saveProgress();
     renderChatRoom();
+    renderChatMain();
     input.value = '';
 }
 
-// ========== 审问对话功能 ==========
+// ========== 角色闲聊 (独立模块) ==========
+function renderChatMain() {
+    var container = document.getElementById('chatMainBox');
+    if(!container) return;
+    var cid = saveData.currentCase;
+    var chatHistory = saveData.chatHistory || [];
+    var chatHtml = '<div class="chat-title" style="font-size:16px;font-weight:bold;color:var(--police-purple);margin-bottom:10px;">💬 角色闲聊 <span style="font-size:12px;color:var(--police-gray);font-weight:normal;">— 与案件角色自由对话</span></div>';
+    chatHtml += '<div id="chatMainMessages" style="max-height:300px;overflow-y:auto;margin-bottom:8px;background:#fff;border-radius:6px;padding:8px;">';
+    if(chatHistory.length === 0) {
+        chatHtml += '<div style="color:var(--police-gray);padding:6px 0;">开始与角色对话吧。</div>';
+    } else {
+        chatHistory.forEach(function(msg){
+            chatHtml += '<div class="chat-msg" style="background:#ffffff;border-radius:8px;padding:8px 14px;margin:4px 0;border-left:4px solid var(--police-purple);"><span class="speaker" style="font-weight:bold;color:var(--police-purple);">' + (msg.speaker === 'user' ? '👤 你' : '🧑‍⚖️ ' + msg.speaker) + '</span>：' + msg.text + '</div>';
+        });
+    }
+    chatHtml += '</div>';
+    chatHtml += '<div class="chat-input-group" style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">';
+    chatHtml += '<input type="text" id="chatMainInput" placeholder="输入你想说的话..." onkeydown="if(event.key===\'Enter\') sendMainChatMessage()" style="flex:1;min-width:140px;padding:8px 14px;border:1px solid var(--police-border);border-radius:6px;font-size:13px;background:#fff;">';
+    chatHtml += '<button onclick="sendMainChatMessage()" style="padding:8px 20px;background:var(--police-purple);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;">发送</button>';
+    chatHtml += '</div>';
+    container.innerHTML = chatHtml;
+}
+
+function sendMainChatMessage() {
+    var input = document.getElementById('chatMainInput');
+    if(!input) return;
+    var text = input.value.trim();
+    if(!text) return;
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) { alert('请先打开卷宗'); return; }
+    var c = getCase(cid);
+    if(!c.persons || c.persons.length === 0) { alert('该案件无角色可对话'); return; }
+    var randomPerson = c.persons[Math.floor(Math.random() * c.persons.length)];
+    if(!saveData.chatHistory) saveData.chatHistory = [];
+    saveData.chatHistory.push({ speaker: 'user', text: text });
+    var replies = [
+        '嗯…你说得有道理。', '我不太清楚你在说什么。', '这个案子确实很复杂。',
+        '你觉得真相是什么？', '我有点累了，能改天再聊吗？', '你让我想起了很多事情。',
+        '也许我们该换个角度思考。', '我没什么可说的了。'
+    ];
+    var reply = replies[Math.floor(Math.random() * replies.length)];
+    saveData.chatHistory.push({ speaker: randomPerson.name, text: reply });
+    saveProgress();
+    renderChatRoom();
+    renderChatMain();
+    input.value = '';
+}
+
+// ========== 审问对话 (侦查模块内) ==========
 function renderInterrogationTargets() {
     var cid = saveData.currentCase;
     var select = document.getElementById('interrogationTarget');
@@ -962,6 +1073,7 @@ function startInterrogation() {
         saveProgress();
     }
     renderInterrogationMessages();
+    renderInterrogationMainMessages();
     select.value = '';
     checkInterrogationClues();
 }
@@ -998,6 +1110,7 @@ function sendInterrogationMessage() {
     saveData.interrogationHistory.push({ speaker: lastSpeaker, text: reply });
     saveProgress();
     renderInterrogationMessages();
+    renderInterrogationMainMessages();
     input.value = '';
     checkInterrogationClues();
 }
@@ -1012,6 +1125,128 @@ function checkInterrogationClues() {
         clueHint.innerHTML = '💡 通过审问获得了新线索！尝试在搜索中使用关键词 "供述" 或 "证词" 来查找。';
     } else {
         clueHint.style.display = 'none';
+    }
+}
+
+// ========== 审问对话 (独立模块) ==========
+function renderInterrogationMainTargets() {
+    var cid = saveData.currentCase;
+    var select = document.getElementById('interrogationMainTarget');
+    if(!select) return;
+    select.innerHTML = '<option value="">— 选择角色 —</option>';
+    if(cid === -1 || cid === undefined) {
+        select.innerHTML += '<option value="" disabled>请先打开卷宗</option>';
+        return;
+    }
+    var c = getCase(cid);
+    if(c.persons && c.persons.length > 0) {
+        c.persons.forEach(function(p){
+            select.innerHTML += '<option value="'+p.name+'">'+p.name+'（'+p.role+'）</option>';
+        });
+    } else {
+        select.innerHTML += '<option value="" disabled>该案件无角色</option>';
+    }
+}
+
+function renderInterrogationMainMessages() {
+    var container = document.getElementById('interrogationMainMessages');
+    if(!container) return;
+    var history = saveData.interrogationHistory || [];
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) {
+        container.innerHTML = '<div style="color:var(--police-gray);padding:6px 0;">请先打开卷宗。</div>';
+        return;
+    }
+    if(history.length === 0) {
+        container.innerHTML = '<div style="color:var(--police-gray);padding:6px 0;">选择一名角色开始审问。</div>';
+        return;
+    }
+    var html = '';
+    history.forEach(function(msg){
+        var isUser = msg.speaker === 'user';
+        html += '<div class="chat-msg" style="border-left-color:' + (isUser ? 'var(--police-blue)' : 'var(--police-red)') + ';">';
+        html += '<span class="speaker" style="color:' + (isUser ? 'var(--police-blue)' : 'var(--police-red)') + ';">' + (isUser ? '👤 你' : '🧑‍⚖️ ' + msg.speaker) + '</span>：' + msg.text;
+        html += '</div>';
+    });
+    container.innerHTML = html;
+    container.scrollTop = container.scrollHeight;
+}
+
+function startMainInterrogation() {
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) { alert('请先打开卷宗'); return; }
+    var select = document.getElementById('interrogationMainTarget');
+    var target = select.value;
+    if(!target) { alert('请选择一名角色'); return; }
+    var c = getCase(cid);
+    var clueHint = document.getElementById('interrogationMainClueHint');
+    if(clueHint) clueHint.style.display = 'none';
+    if(!saveData.interrogationHistory) saveData.interrogationHistory = [];
+    var hasTargetHistory = saveData.interrogationHistory.some(function(msg) { return msg.speaker === target; });
+    if(!hasTargetHistory) {
+        var opening = '你找我有什么事？我是' + target + '。';
+        var interClues = c.interrogationClues || {};
+        if(interClues[target] && interClues[target].length > 0) {
+            opening = interClues[0];
+        }
+        saveData.interrogationHistory.push({ speaker: target, text: opening });
+        saveProgress();
+    }
+    renderInterrogationMessages();
+    renderInterrogationMainMessages();
+    select.value = '';
+    if(clueHint) {
+        var history = saveData.interrogationHistory || [];
+        var userMessages = history.filter(function(msg) { return msg.speaker === 'user'; });
+        if(userMessages.length >= 2) {
+            clueHint.style.display = 'block';
+            clueHint.innerHTML = '💡 通过审问获得了新线索！尝试在搜索中使用关键词 "供述" 或 "证词" 来查找。';
+        }
+    }
+}
+
+function sendMainInterrogationMessage() {
+    var input = document.getElementById('interrogationMainInput');
+    if(!input) return;
+    var text = input.value.trim();
+    if(!text) { alert('请输入你的问题'); return; }
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) { alert('请先打开卷宗'); return; }
+    var c = getCase(cid);
+    var history = saveData.interrogationHistory || [];
+    var lastSpeaker = null;
+    for(var i = history.length - 1; i >= 0; i--) {
+        if(history[i].speaker !== 'user') {
+            lastSpeaker = history[i].speaker;
+            break;
+        }
+    }
+    if(!lastSpeaker) {
+        alert('请先点击"开始审问"选择一名角色。');
+        return;
+    }
+    if(!saveData.interrogationHistory) saveData.interrogationHistory = [];
+    saveData.interrogationHistory.push({ speaker: 'user', text: text });
+    
+    var interClues = c.interrogationClues || {};
+    var replies = interClues[lastSpeaker] || [
+        '这个……我不太清楚。', '你为什么要问这个？', '我什么都不知道。',
+        '别再逼我了！', '好吧，我告诉你一些事情……'
+    ];
+    var reply = replies[Math.floor(Math.random() * replies.length)];
+    saveData.interrogationHistory.push({ speaker: lastSpeaker, text: reply });
+    saveProgress();
+    renderInterrogationMessages();
+    renderInterrogationMainMessages();
+    input.value = '';
+    
+    var clueHint = document.getElementById('interrogationMainClueHint');
+    if(clueHint) {
+        var userMessages = history.filter(function(msg) { return msg.speaker === 'user'; });
+        if(userMessages.length >= 2) {
+            clueHint.style.display = 'block';
+            clueHint.innerHTML = '💡 通过审问获得了新线索！尝试在搜索中使用关键词 "供述" 或 "证词" 来查找。';
+        }
     }
 }
 
@@ -1056,7 +1291,7 @@ function renderParallel() {
     }
 }
 
-// ========== 结案问答（渲染更新后的问题） ==========
+// ========== 结案问答 ==========
 function renderQuiz() {
     var cid = saveData.currentCase;
     var empty = document.getElementById('quizEmpty');
@@ -1247,7 +1482,7 @@ function refreshLocalSave() {
     while(saveData.unlock.length < CASE_TOTAL) saveData.unlock.push(false);
     currentCID = saveData.currentCase;
     currentCaseData = currentCID !== -1 ? getCase(currentCID) : null;
-    renderArchive(); renderFinished(); renderSearch(); renderClues(); renderQuiz(); renderReport(); renderOverview(); renderParallel(); renderChatRoom(); renderInterrogationTargets(); renderInterrogationMessages();
+    renderArchive(); renderFinished(); renderSearch(); renderClues(); renderQuiz(); renderReport(); renderOverview(); renderParallel(); renderChatRoom(); renderChatMain(); renderInterrogationTargets(); renderInterrogationMessages(); renderInterrogationMainTargets(); renderInterrogationMainMessages();
     updateProgress();
     alert('✅ 已同步本地存档。');
 }
@@ -1257,7 +1492,7 @@ function clearAllSave() {
     localStorage.removeItem('policeCaseArchiveSave');
     saveData = { unlock: [true, false, false, false, false, false, false], clear: [], currentCase: -1, foundClues: [], quizAnswers: {}, chatHistory: [], interrogationHistory: [] };
     currentCID = -1; currentCaseData = null;
-    renderArchive(); renderFinished(); renderSearch(); renderClues(); renderQuiz(); renderReport(); renderOverview(); renderParallel(); renderChatRoom(); renderInterrogationTargets(); renderInterrogationMessages();
+    renderArchive(); renderFinished(); renderSearch(); renderClues(); renderQuiz(); renderReport(); renderOverview(); renderParallel(); renderChatRoom(); renderChatMain(); renderInterrogationTargets(); renderInterrogationMessages(); renderInterrogationMainTargets(); renderInterrogationMainMessages();
     updateProgress();
     alert('已重置全部进度。');
 }
@@ -1275,8 +1510,11 @@ renderQuiz();
 renderReport();
 renderParallel();
 renderChatRoom();
+renderChatMain();
 renderInterrogationTargets();
 renderInterrogationMessages();
+renderInterrogationMainTargets();
+renderInterrogationMainMessages();
 </script>
 </body>
 </html>

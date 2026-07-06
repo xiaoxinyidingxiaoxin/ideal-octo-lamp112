@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>破云·吞海｜全案件沉浸式探案</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei","微软雅黑",SimHei,system-ui,sans-serif;}
+        :root{
+            --police-bg:#f0f7ff;
+            --police-main:#e6f0fa;
+            --police-border:#b8d0e8;
+            --police-text:#0b2b4a;
+            --police-gray:#4a6a8a;
+            --police-blue:#1a5a9c;
+            --police-light:#3a7ac8;
+            --police-red:#c0392b;
+            --police-green:#1e7e34;
+            --police-yellow:#b9770e;
+            --police-purple:#6c3483;
+            --card-shadow:0 4px 12px rgba(26, 90, 156, 0.10);
+        }
+        #loginOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(145deg, #dce8f5 0%, #b8d0e8 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.8s ease;}
+        #loginOverlay.hidden{opacity:0;pointer-events:none;}
+        .login-box{background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.5);border-radius:24px;padding:48px 44px;width:420px;max-width:92%;box-shadow:0 20px 60px rgba(26,90,156,0.15);text-align:center;}
+        .login-box .emblem{font-size:52px;display:block;margin-bottom:8px;}
+        .login-box h1{color:var(--police-blue);font-size:22px;font-weight:600;letter-spacing:2px;}
+        .login-box .sub{color:var(--police-gray);font-size:13px;letter-spacing:4px;margin-bottom:28px;}
+        .login-box .input-group{position:relative;margin:14px 0;text-align:left;}
+        .login-box .input-group label{display:block;font-size:12px;color:var(--police-gray);font-weight:500;margin-bottom:4px;}
+        .login-box .input-group input{width:100%;padding:14px 18px;background:#f8fafc;border:1.5px solid var(--police-border);border-radius:10px;color:var(--police-text);font-size:15px;outline:none;transition:all 0.3s;}
+        .login-box .input-group input:focus{border-color:var(--police-blue);background:#fff;box-shadow:0 0 0 4px rgba(26,90,156,0.10);}
+        .login-box .login-btn{width:100%;padding:15px;margin-top:20px;background:var(--police-blue);border:none;border-radius:10px;color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;letter-spacing:2px;box-shadow:0 4px 16px rgba(26,90,156,0.25);}
+        .login-box .login-btn:hover{background:#0e4a7a;transform:translateY(-2px);}
+        .login-box .error-msg{color:var(--police-red);font-size:13px;margin-top:12px;min-height:20px;}
+        .login-box .online-status{color:var(--police-gray);font-size:12px;margin-top:20px;opacity:0.6;}
+        .login-box .online-status .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#4ade80;margin-right:8px;animation:pulse 2s infinite;}
+        @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+        .login-box .footer-hint{color:var(--police-gray);font-size:11px;margin-top:14px;opacity:0.4;}
+        .login-box .deco-line{width:60px;height:3px;background:linear-gradient(90deg,var(--police-blue),var(--police-light));border-radius:4px;margin:0 auto 20px auto;}
+        body{background:var(--police-bg);color:var(--police-text);padding:0;margin:0;font-size:14px;}
+        .police-header{background:var(--police-blue);border-bottom:3px solid #0e4a7a;padding:12px 28px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:99;box-shadow:0 2px 6px rgba(0,0,0,0.08);flex-wrap:wrap;gap:8px;}
+        .police-logo{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+        .police-logo h1{font-size:19px;color:#fff;font-weight:500;letter-spacing:1px;}
+        .police-logo span{color:#d4e4ff;font-size:12px;}
+        .police-status{display:flex;gap:16px;font-size:12px;color:#fff;align-items:center;flex-wrap:wrap;}
+        .status-online{color:#bbf7d0;}.status-secret{color:#fef08a;}
+        .police-container{display:grid;grid-template-columns:200px 1fr;min-height:calc(100vh - 62px);}
+        .police-sidebar{background:var(--police-main);border-right:1px solid var(--police-border);padding:18px 0;overflow-y:auto;}
+        .sidebar-module{margin-bottom:12px;}
+        .sidebar-title{padding:10px 20px;color:var(--police-gray);font-size:12px;font-weight:500;border-bottom:1px solid var(--police-border);margin-bottom:6px;}
+        .sidebar-btn{display:block;width:100%;text-align:left;padding:11px 20px;background:transparent;border:none;color:var(--police-text);cursor:pointer;font-size:13px;transition:all 0.2s ease;}
+        .sidebar-btn:hover{background:#d4e4ff;border-left:4px solid var(--police-blue);color:var(--police-blue);}
+        .sidebar-btn.active{background:#c0d8f5;border-left:4px solid var(--police-blue);color:var(--police-blue);font-weight:bold;}
+        .police-workspace{padding:24px;overflow-y:auto;background:var(--police-bg);}
+        .work-card{background:#ffffff;border:1px solid var(--police-border);border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:var(--card-shadow);}
+        .card-title{font-size:17px;color:var(--police-blue);margin-bottom:18px;padding-bottom:10px;border-bottom:1px dashed var(--police-border);display:flex;justify-content:space-between;font-weight:500;flex-wrap:wrap;gap:8px;}
+        .case-archive-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+        .archive-item{background:#ffffff;border:1px solid var(--police-border);border-radius:8px;padding:16px;cursor:pointer;transition:all 0.25s ease;}
+        .archive-item:hover{border-color:var(--police-blue);transform:translateY(-3px);box-shadow:var(--card-shadow);}
+        .archive-item.unlock{opacity:1;}
+        .archive-item.lock{opacity:0.55;pointer-events:none;background:#f0f5fb;}
+        .archive-tag{font-size:11px;padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;color:#fff;font-weight:500;}
+        .tag-poyun{background:#1a5a9c;}.tag-tunhai{background:#6c3483;}
+        .archive-desc{font-size:12px;color:var(--police-gray);margin-top:8px;line-height:1.5;}
+        .search-container{background:#f5faff;border:2px solid var(--police-border);border-radius:10px;padding:20px;margin:16px 0;}
+        .search-input-group{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+        .search-input-group input{flex:1;min-width:160px;padding:10px 14px;border:1px solid var(--police-border);border-radius:6px;font-size:14px;outline:none;transition:border 0.2s;background:#fff;}
+        .search-input-group input:focus{border-color:var(--police-blue);box-shadow:0 0 0 3px rgba(26,90,156,0.10);}
+        .search-input-group select{padding:10px 14px;border:1px solid var(--police-border);border-radius:6px;font-size:14px;background:#fff;cursor:pointer;}
+        .search-input-group button{padding:10px 24px;background:var(--police-blue);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;transition:all 0.2s;}
+        .search-input-group button:hover{background:#0e4a7a;}
+        .search-result{background:#fff;border:1px solid var(--police-border);border-radius:8px;padding:16px;margin-top:12px;min-height:60px;}
+        .search-result .found{color:var(--police-green);font-weight:bold;}
+        .search-result .not-found{color:var(--police-red);}
+        .search-result .result-item{border-bottom:1px solid #eaf0f6;padding:10px 0;}
+        .search-result .result-item:last-child{border-bottom:none;}
+        .result-item .tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;margin-right:8px;}
+        .tag-evd{background:#d4e4ff;color:#1a5a9c;}
+        .tag-person{background:#fce4ec;color:#9d174d;}
+        .tag-place{background:#d4edda;color:#065f46;}
+        .initial-info{background:#eaf2fa;border-left:4px solid var(--police-red);padding:16px;margin:12px 0;border-radius:6px;}
+        .initial-info .label{font-weight:bold;color:var(--police-red);}
+        .initial-info .detail{margin:4px 0 4px 16px;color:var(--police-text);}
+        .progress-bar{background:var(--police-border);border-radius:10px;height:8px;margin:8px 0;overflow:hidden;}
+        .progress-fill{background:var(--police-green);height:100%;border-radius:10px;transition:width 0.5s ease;}
+        .module{display:none;}.module.active{display:block;animation:fadeIn 0.4s ease;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+        ::-webkit-scrollbar{width:7px;height:7px;}::-webkit-scrollbar-thumb{background:#b8d0e8;border-radius:4px;}::-webkit-scrollbar-track{background:#f0f7ff;}
+        .jump-bar{margin:10px 0;display:flex;flex-wrap:wrap;gap:8px;}
+        .jump-btn{padding:6px 12px;background:#d4e4ff;border:1px solid var(--police-blue);color:var(--police-blue);border-radius:4px;cursor:pointer;font-size:12px;transition:all 0.2s;}
+        .jump-btn:hover{background:var(--police-blue);color:#fff;}
+        .badge-complete{background:var(--police-green);color:white;padding:2px 10px;border-radius:12px;font-size:11px;}
+        .case-open-badge{background:var(--police-blue);color:white;padding:2px 10px;border-radius:12px;font-size:11px;margin-left:8px;}
+        .hint-text{color:var(--police-gray);font-size:13px;margin:8px 0;}
+        .clue-list{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;}
+        .clue-badge{display:inline-block;padding:4px 12px;border-radius:12px;font-size:12px;background:#eaf0f6;color:#2c3e50;}
+        .clue-badge.found{background:#d4edda;color:#065f46;border:1px solid #8fd9a0;}
+        .user-info{display:flex;align-items:center;gap:12px;color:#fff;font-size:13px;flex-wrap:wrap;}
+        .user-info .avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;}
+        .user-info .logout-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:4px 14px;border-radius:4px;cursor:pointer;font-size:12px;transition:all 0.2s;}
+        .user-info .logout-btn:hover{background:rgba(255,255,255,0.2);}
+        .series-badge{display:inline-block;padding:2px 12px;border-radius:12px;font-size:11px;font-weight:bold;margin-right:6px;}
+        .badge-poyun{background:#d4e4ff;color:#1a5a9c;}
+        .badge-tunhai{background:#ede9fe;color:#6c3483;}
+        .clue-overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:12px;}
+        .clue-overview-card{background:#f5faff;border:1px solid var(--police-border);border-radius:8px;padding:16px;}
+        .clue-overview-card .case-name{font-weight:bold;color:var(--police-blue);font-size:15px;margin-bottom:8px;}
+        .clue-overview-card .clue-item{font-size:12px;color:var(--police-gray);padding:4px 0;border-bottom:1px dashed #dce8f5;}
+        .clue-overview-card .clue-item:last-child{border-bottom:none;}
+        .clue-overview-card .clue-tag{display:inline-block;padding:0 6px;border-radius:3px;font-size:10px;margin-right:4px;}
+        .clue-tag-evd{background:#d4e4ff;color:#1a5a9c;}
+        .clue-tag-person{background:#fce4ec;color:#9d174d;}
+        .clue-tag-place{background:#d4edda;color:#065f46;}
+        .clue-overview-card .quiz-answer{font-size:12px;color:var(--police-green);padding:2px 0;}
+        .quiz-option{display:block;padding:10px 16px;margin:6px 0;border:1px solid var(--police-border);border-radius:6px;cursor:pointer;transition:all 0.2s;background:#fff;}
+        .quiz-option:hover{background:#d4e4ff;border-color:var(--police-blue);}
+        .quiz-option.selected{background:#c0d8f5;border-color:var(--police-blue);}
+        .quiz-option.correct{background:#d4edda;border-color:var(--police-green);}
+        .quiz-option.wrong{background:#fce4ec;border-color:var(--police-red);}
+        .conclusion-box{border:1px solid var(--police-green);background:rgba(30,126,52,0.08);padding:20px;border-radius:8px;margin-top:20px;display:none;}
+        .conclusion-box.show{display:block;}
+        /* 审讯室模块 */
+        .interrogation-room{background:#f8fbff;border:2px solid var(--police-blue);border-radius:12px;padding:20px;margin-top:20px;box-shadow:var(--card-shadow);}
+        .interrogation-room .room-title{font-size:18px;font-weight:bold;color:var(--police-blue);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+        .interrogation-room .room-title .badge{background:var(--police-red);color:#fff;padding:2px 12px;border-radius:12px;font-size:11px;}
+        .interrogation-room .suspect-name{font-size:17px;font-weight:bold;color:var(--police-blue);margin-bottom:2px;}
+        .interrogation-room .suspect-desc{font-size:13px;color:var(--police-gray);margin-bottom:10px;}
+        .interrogation-room .question-btn{background:var(--police-blue);border:none;color:#fff;padding:6px 16px;border-radius:6px;margin:4px 6px 4px 0;cursor:pointer;font-size:13px;transition:all 0.2s;}
+        .interrogation-room .question-btn:hover{background:#0e4a7a;}
+        .interrogation-room .question-btn:disabled{background:#b8d0e8;cursor:not-allowed;opacity:0.6;}
+        .interrogation-room .status-tag{display:inline-block;padding:2px 12px;border-radius:12px;font-size:11px;font-weight:bold;}
+        .interrogation-room .status-tag.breakthrough{background:#d4edda;color:#065f46;}
+        .interrogation-room .status-tag.resistant{background:#fce4ec;color:#9d174d;}
+        .interrogation-room .answer-text{color:#4a6a8a;font-size:13px;margin-left:8px;}
+        .interrogation-room .breakthrough-tag{color:#1e7e34;font-weight:bold;}
+        .interrogation-room .suspect-block{background:#ffffff;border-radius:8px;padding:14px;margin-bottom:14px;border:1px solid #dce8f5;}
+        .interrogation-room .empty-msg{color:var(--police-gray);text-align:center;padding:20px 0;}
+        /* 审讯对话独立区域 - 位于三栏下方 */
+        .interrogation-chat-section{background:#f8fbff;border:2px solid var(--police-blue);border-radius:12px;padding:20px;margin-top:20px;box-shadow:var(--card-shadow);}
+        .interrogation-chat-section .section-title{font-size:17px;font-weight:bold;color:var(--police-blue);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+        .interrogation-chat-section .section-title .badge{background:var(--police-red);color:#fff;padding:2px 14px;border-radius:12px;font-size:11px;}
+        .interrogation-chat-section .chat-msg{background:#ffffff;border-radius:8px;padding:10px 16px;margin:6px 0;border-left:4px solid var(--police-blue);}
+        .interrogation-chat-section .chat-msg .speaker{font-weight:bold;color:var(--police-blue);}
+        .interrogation-chat-section .chat-msg .speaker.suspect{color:#6c3483;}
+        .interrogation-chat-section .chat-msg .breakthrough-tag{color:var(--police-green);font-weight:bold;margin-left:6px;}
+        .interrogation-chat-section .empty-msg{color:var(--police-gray);text-align:center;padding:24px 0;font-size:14px;}
+        .interrogation-chat-section .chat-timestamp{font-size:11px;color:var(--police-gray);margin-left:10px;}
+        .interrogation-chat-section .chat-stats{font-size:12px;color:var(--police-gray);margin-bottom:10px;}
+        .interrogation-chat-section .chat-list{max-height:350px;overflow-y:auto;}
+        .interrogation-chat-section .chat-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
+        /* 角色闲聊 - 在案件归档中心 */
+        .chat-room{background:#f8fbff;border:2px solid var(--police-purple);border-radius:12px;padding:16px;margin-top:16px;box-shadow:var(--card-shadow);}
+        .chat-room .chat-title{font-size:16px;font-weight:bold;color:var(--police-purple);margin-bottom:10px;}
+        .chat-room .chat-msg{background:#ffffff;border-radius:8px;padding:8px 14px;margin:4px 0;border-left:4px solid var(--police-purple);}
+        .chat-room .chat-msg .speaker{font-weight:bold;color:var(--police-purple);}
+        .chat-room .chat-input-group{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;}
+        .chat-room .chat-input-group input{flex:1;min-width:140px;padding:8px 14px;border:1px solid var(--police-border);border-radius:6px;font-size:13px;background:#fff;}
+        .chat-room .chat-input-group button{padding:8px 20px;background:var(--police-purple);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;}
+        .chat-room .chat-input-group button:hover{background:#5b2d7a;}
+        /* 三栏并行布局 */
+        .parallel-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px;}
+        .parallel-grid .col{min-width:0;}
+        /* 归档中心双栏布局 */
+        .archive-bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
+        .archive-bottom-grid .col{min-width:0;}
+        @media (max-width:900px){.parallel-grid{grid-template-columns:1fr 1fr;}.archive-bottom-grid{grid-template-columns:1fr 1fr;}}
+        @media (max-width:600px){.parallel-grid{grid-template-columns:1fr;}.archive-bottom-grid{grid-template-columns:1fr;}}
+        @media (max-width:768px){.police-container{grid-template-columns:1fr;}.police-sidebar{display:flex;flex-wrap:wrap;padding:8px;border-right:none;border-bottom:1px solid var(--police-border);}.sidebar-module{flex:1;min-width:100px;}}
+        @media (max-width:480px){.login-box{padding:32px 20px;}.police-header{padding:10px 16px;}.police-logo h1{font-size:15px;}.police-workspace{padding:12px;}.work-card{padding:16px;}}
+        /* 归档中心审讯对话样式 */
+        .archive-interrogation-chat{background:#f8fbff;border:2px solid var(--police-blue);border-radius:12px;padding:16px;margin-top:16px;box-shadow:var(--card-shadow);}
+        .archive-interrogation-chat .chat-title{font-size:16px;font-weight:bold;color:var(--police-blue);margin-bottom:10px;}
+        .archive-interrogation-chat .chat-msg{background:#ffffff;border-radius:8px;padding:10px 14px;margin:6px 0;border-left:4px solid var(--police-blue);}
+        .archive-interrogation-chat .chat-msg .speaker{font-weight:bold;color:var(--police-blue);}
+        .archive-interrogation-chat .chat-msg .speaker.suspect{color:#6c3483;}
+        .archive-interrogation-chat .chat-stats{font-size:12px;color:var(--police-gray);margin-bottom:8px;}
+        .archive-interrogation-chat .chat-list{max-height:250px;overflow-y:auto;}
+        .archive-interrogation-chat .breakthrough-tag{color:var(--police-green);font-weight:bold;margin-left:6px;}
+        .archive-interrogation-chat .empty-msg{color:var(--police-gray);text-align:center;padding:16px 0;}
+    </style>
+</head>
+<body>
+
+<!-- ===== 登录页面 ===== -->
+<div id="loginOverlay">
+    <div class="login-box">
+        <span class="emblem">🕵️</span>
+        <h1>刑侦综合办案系统</h1>
+        <div class="deco-line"></div>
+        <div class="sub">破云 · 吞海 ｜ 全案件沉浸式探案 ｜ 内网 V2.6</div>
+        <div class="input-group">
+            <label>👤 警号 / 账号</label>
+            <input type="text" id="loginUser" placeholder="请输入警号或用户名" value="admin">
+        </div>
+        <div class="input-group">
+            <label>🔒 密码</label>
+            <input type="password" id="loginPass" placeholder="请输入密码" value="0626" onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <button class="login-btn" onclick="doLogin()">🔓 登 录 系 统</button>
+        <div id="loginError" class="error-msg"></div>
+        <div class="online-status">
+            <span class="status-dot"></span> 内网已连接 · 加密通道
+        </div>
+        <div class="footer-hint">默认密码：0626</div>
+    </div>
+</div>
+
+<!-- ===== 主系统 ===== -->
+<div id="mainSystem" style="display:none;">
+<header class="police-header">
+    <div class="police-logo"><h1>公安部刑侦综合办案系统｜内网V2.6</h1><span>全案件沉浸式探案</span></div>
+    <div class="police-status">
+        <span class="status-online">● 内网已连接</span>
+        <span class="status-secret">⚠️ 涉密卷宗</span>
+        <span id="globalProgress">进度：0/7 办结</span>
+        <div class="user-info">
+            <span class="avatar">👤</span>
+            <span id="userDisplay">警员</span>
+            <button class="logout-btn" onclick="doLogout()">退出</button>
+        </div>
+    </div>
+</header>
+<div class="police-container">
+    <aside class="police-sidebar">
+        <div class="sidebar-module"><div class="sidebar-title">案件归档中心</div>
+            <button class="sidebar-btn active" data-mod="archive" onclick="switchModule('archive')">📁 全部卷宗</button>
+            <button class="sidebar-btn" data-mod="finished" onclick="switchModule('finished')">✅ 已办结</button></div>
+        <div class="sidebar-module"><div class="sidebar-title">侦查模块</div>
+            <button class="sidebar-btn" data-mod="search" onclick="switchModule('search')">🔍 线索搜索</button>
+            <button class="sidebar-btn" data-mod="clues" onclick="switchModule('clues')">📋 已获线索</button></div>
+        <div class="sidebar-module"><div class="sidebar-title">研判结案</div>
+            <button class="sidebar-btn" data-mod="quiz" onclick="switchModule('quiz')">📝 结案问答</button>
+            <button class="sidebar-btn" data-mod="report" onclick="switchModule('report')">📄 结案报告</button></div>
+        <div class="sidebar-module"><div class="sidebar-title">系统管理</div>
+            <button class="sidebar-btn" onclick="refreshLocalSave()">🔄 同步存档</button>
+            <button class="sidebar-btn" style="color:var(--police-red);" onclick="clearAllSave()">🗑️ 重置进度</button></div>
+        <div class="sidebar-module"><div class="sidebar-title">线索总览</div>
+            <button class="sidebar-btn" data-mod="overview" onclick="switchModule('overview')">📖 案件线索总览</button></div>
+    </aside>
+    <main class="police-workspace">
+        <!-- ===== 案件归档中心 ===== -->
+        <div id="mod-archive" class="module active">
+            <div class="work-card">
+                <div class="card-title"><span>📂 刑侦归档库 · 破云/吞海 全案件</span><span style="font-size:12px;color:var(--police-gray);">点击卷宗进入侦查</span></div>
+                <div class="case-archive-grid" id="archiveGrid"></div>
+                <!-- 归档中心底部：审讯对话 + 角色闲聊 -->
+                <div class="archive-bottom-grid">
+                    <div class="col">
+                        <div id="archiveInterrogationChat" class="archive-interrogation-chat"></div>
+                    </div>
+                    <div class="col">
+                        <div id="chatRoom" class="chat-room"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="mod-finished" class="module"><div class="work-card"><div class="card-title">✅ 办结归档</div><div id="finishedList" style="color:var(--police-gray);text-align:center;padding:40px 0;">暂无办结卷宗</div></div></div>
+        
+        <!-- ===== 侦查模块（线索搜索） ===== -->
+        <div id="mod-search" class="module">
+            <div class="work-card">
+                <div class="card-title"><span>🔍 线索搜索 · 凭记忆检索</span><span id="searchProgress" style="font-size:13px;color:var(--police-gray);font-weight:normal;"></span></div>
+                <div class="jump-bar"><button class="jump-btn" onclick="switchModule('clues')">→ 已获线索</button><button class="jump-btn" onclick="switchModule('quiz')">→ 结案问答</button></div>
+                <div id="initialInfoContainer"></div>
+                <div class="hint-text">💡 搜索物证、人物或地点。</div>
+                <div class="search-container">
+                    <div class="search-input-group">
+                        <input type="text" id="searchInput" placeholder="输入关键词..." onkeydown="if(event.key==='Enter') performSearch()">
+                        <select id="searchType"><option value="all">全部</option><option value="evd">物证</option><option value="person">人物</option><option value="place">地点</option></select>
+                        <button onclick="performSearch()">🔍 搜索</button>
+                    </div>
+                    <div id="searchResult" class="search-result">
+                        <div style="color:var(--police-gray);text-align:center;padding:16px 0;">输入关键词开始搜索</div>
+                    </div>
+                </div>
+                
+                <!-- 新增：独立的审讯室模块（位于搜索框下方，三栏上方） -->
+                <div id="interrogateRoom" class="interrogation-room" style="margin-top:20px;"></div>
+                
+                <!-- 三栏并行：已获线索、结案问答（审讯室已单独移出） -->
+                <div class="parallel-grid" style="grid-template-columns:1fr 1fr 1fr;">
+                    <div class="col"><div id="cluesParallel" style="background:#f8fbff;border:2px solid var(--police-border);border-radius:12px;padding:16px;box-shadow:var(--card-shadow);"><div style="font-weight:bold;color:var(--police-blue);margin-bottom:8px;">📋 已获线索</div><div id="cluesParallelContent" style="color:var(--police-gray);font-size:13px;">请先打开卷宗</div></div></div>
+                    <div class="col"><div id="quizParallel" style="background:#f8fbff;border:2px solid var(--police-border);border-radius:12px;padding:16px;box-shadow:var(--card-shadow);"><div style="font-weight:bold;color:var(--police-blue);margin-bottom:8px;">📝 结案问答</div><div id="quizParallelContent" style="color:var(--police-gray);font-size:13px;">请先打开卷宗</div></div></div>
+                    <div class="col"><div style="background:#f8fbff;border:2px solid var(--police-border);border-radius:12px;padding:16px;box-shadow:var(--card-shadow);"><div style="font-weight:bold;color:var(--police-blue);margin-bottom:8px;">📄 快速结案</div><div style="color:var(--police-gray);font-size:13px;">完成线索收集与审问后，<a href="#" onclick="switchModule('quiz')" style="color:var(--police-blue);">前往结案问答</a></div></div></div>
+                </div>
+                
+                <!-- ===== 审讯对话独立区域 - 位于三栏下方 ===== -->
+                <div id="interrogationChatSection" class="interrogation-chat-section"></div>
+            </div>
+        </div>
+        
+        <!-- ===== 已获线索模块 ===== -->
+        <div id="mod-clues" class="module"><div class="work-card"><div class="card-title">📋 已获线索 <span id="clueCount" style="font-size:13px;color:var(--police-gray);font-weight:normal;"></span></div>
+            <div class="jump-bar"><button class="jump-btn" onclick="switchModule('search')">→ 搜索</button><button class="jump-btn" onclick="switchModule('quiz')">→ 结案问答</button></div>
+            <div id="cluesEmpty" style="color:var(--police-gray);text-align:center;padding:40px 0;">尚未发现任何线索</div>
+            <div id="cluesList"></div>
+            <div class="progress-bar"><div class="progress-fill" id="clueProgressFill" style="width:0%"></div></div>
+            <div style="text-align:right;font-size:12px;color:var(--police-gray);" id="clueProgressText">0 / 0 线索已发现</div>
+        </div></div>
+        
+        <div id="mod-quiz" class="module"><div class="work-card"><div class="card-title">📝 结案问答 <span id="quizTitle" style="font-size:13px;color:var(--police-gray);font-weight:normal;"></span></div>
+            <div class="jump-bar"><button class="jump-btn" onclick="switchModule('search')">→ 搜索</button><button class="jump-btn" onclick="switchModule('clues')">→ 已获线索</button></div>
+            <div id="quizEmpty" style="color:var(--police-gray);text-align:center;padding:40px 0;">完成全部调查后解锁</div>
+            <div id="quizContent"></div>
+            <div style="margin-top:16px;"><button class="police-btn" style="background:var(--police-green);color:#fff;border:none;padding:9px 20px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;" id="submitQuizBtn" style="display:none;" onclick="submitQuiz()">📤 提交答案</button></div>
+        </div></div>
+        <div id="mod-report" class="module"><div class="work-card"><div class="card-title">📄 结案报告</div>
+            <div class="jump-bar"><button class="jump-btn" onclick="switchModule('quiz')">→ 结案问答</button></div>
+            <div id="reportEmpty" style="color:var(--police-gray);text-align:center;padding:40px 0;">完成问答后生成报告</div>
+            <div class="conclusion-box" id="finalReport"></div>
+        </div></div>
+        <div id="mod-overview" class="module"><div class="work-card"><div class="card-title">📖 案件线索总览 <span style="font-size:13px;color:var(--police-gray);font-weight:normal;">— 所有案件完整线索清单</span></div>
+            <div class="jump-bar"><button class="jump-btn" onclick="switchModule('archive')">→ 卷宗</button><button class="jump-btn" onclick="switchModule('search')">→ 搜索</button></div>
+            <div style="margin-bottom:12px;color:var(--police-gray);font-size:13px;">💡 以下是所有案件中可搜索的物证、人物和地点线索，以及结案问答正确答案。</div>
+            <div id="clueOverviewContainer" class="clue-overview-grid"></div>
+        </div></div>
+    </main>
+</div>
+</div>
+
+<script>
+// ========== 登录逻辑 ==========
+var currentUser = '';
+
+function doLogin() {
+    var user = document.getElementById('loginUser').value.trim();
+    var pass = document.getElementById('loginPass').value.trim();
+    var errorEl = document.getElementById('loginError');
+    if(!user) { errorEl.textContent = '⚠️ 请输入警号或用户名'; return; }
+    if(pass !== '0626') { errorEl.textContent = '❌ 密码错误，请重试'; return; }
+    currentUser = user;
+    errorEl.textContent = '';
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('mainSystem').style.display = 'block';
+    document.getElementById('userDisplay').textContent = user;
+    
+    if(!saveData.unlock || saveData.unlock.length === 0) {
+        saveData.unlock = [true, false, false, false, false, false, false];
+    }
+    saveProgress();
+    
+    renderArchive();
+    updateProgress();
+    if(saveData.currentCase !== -1 && saveData.currentCase !== undefined) {
+        currentCID = saveData.currentCase;
+        currentCaseData = getCase(currentCID);
+    }
+    renderSearch();
+    renderClues();
+    renderInterrogateRoom();
+    renderInterrogationChat();
+    renderArchiveInterrogationChat();
+    renderChatRoom();
+    renderQuiz();
+    renderReport();
+    renderParallel();
+}
+
+function doLogout() {
+    if(!confirm('确认退出系统？')) return;
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    document.getElementById('mainSystem').style.display = 'none';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginError').textContent = '';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('loginPass').addEventListener('keydown', function(e) {
+        if(e.key === 'Enter') doLogin();
+    });
+});
+
+// ========== 游戏数据 ==========
+var CASE_TOTAL = 7;
+var saveData = JSON.parse(localStorage.getItem('policeCaseArchiveSave')) || {
+    unlock: [true, false, false, false, false, false, false],
+    clear: [],
+    currentCase: -1,
+    foundClues: [],
+    quizAnswers: {},
+    interrogateProgress: {},
+    chatHistory: [],
+    interrogationLog: [] // 审讯对话记录
+};
+var currentCID = -1;
+var currentCaseData = null;
+
+// ========== 全案件数据库（精简版） ==========
+var caseDB = {
+    0: {
+        id: 0, series: "破云", title: "建宁502冷库剧毒冻尸案", tag: "tag-poyun", tagName: "破云·入门",
+        desc: "破云开篇案件，不夜宫KTV后厨冷库惊现冻尸",
+        initialInfo: {
+            deathScene: "建宁市不夜宫KTV·后厨冷库/冰柜。",
+            bodyCondition: "死者冯宇光，年轻男性，体内检出过量东莨菪碱与MDMA混合物。",
+            keyFacts: "1.冯宇光从丁当处购买仿制蓝金失败品；2.丁当因喜欢楚慈而蓄意杀害冯宇光。"
+        },
+        evd: [
+            { id: "e1", name: "心肌毒素切片", desc: "东莨菪碱与MDMA混合物残留", detail: "系毒品致幻后冻死。" },
+            { id: "e3", name: "FENDI双肩包", desc: "死者遗物", detail: "被发现于二手店'秋雨名品'。" },
+            { id: "e9", name: "链头", desc: "死者周围发现的金属链头", detail: "与FENDI双肩包品牌一致。" }
+        ],
+        persons: [
+            { id: "p0", name: "胡伟胜", role: "冷库经营者/丁当男友", desc: "丁当的男友，黑桃K下线。" },
+            { id: "p2", name: "丁当", role: "制毒团伙成员/胡伟胜女友", desc: "用仿制蓝金失败品给冯宇光试毒。" }
+        ],
+        places: [
+            { id: "l0", name: "不夜宫KTV·后厨冷库", desc: "案发现场" },
+            { id: "l1", name: "秋雨名品二手店", desc: "双肩包被销赃处" }
+        ],
+        quiz: [
+            { q: "死者冯宇光的真实死因是什么？", options: ["单纯低温冻死", "蓝金类毒物致幻后冻死", "被谋杀后抛尸", "意外窒息"], correct: 1 },
+            { q: "谁给死者提供了毒品？", options: ["胡伟胜", "丁当", "杨媚", "严峫"], correct: 1 }
+        ],
+        report: { culprit: "丁当（提供毒品）+ 胡伟胜（制毒窝点管理）", motive: "丁当因喜欢楚慈而蓄意杀害冯宇光", summary: "死者冯宇光从丁当处购买东莨菪碱与MDMA混合物，产生强烈致幻后自行钻入冷库冻死。" },
+        interrogate: {
+            suspects: [
+                { id: "p2", name: "丁当", desc: "胡伟胜女友，制毒团伙成员。", 
+                  questions: [
+                      { q: "你和冯宇光是什么关系？", answer: "他……他来找我买过东西。", breakthrough: false },
+                      { q: "你给冯宇光提供了什么？", answer: "一些……一些粉末。他说是提神用的。", breakthrough: false },
+                      { q: "你是不是喜欢楚慈？", answer: "（沉默）……是，我喜欢楚慈。", breakthrough: true }
+                  ] },
+                { id: "p0", name: "胡伟胜", desc: "冷库经营者，黑桃K下线。",
+                  questions: [
+                      { q: "你对花生过敏吗？", answer: "……你怎么知道？", breakthrough: false },
+                      { q: "你和黑桃K有什么关系？", answer: "我只是个下线……求求你别问了。", breakthrough: false },
+                      { q: "丁当在你身边是为了什么？", answer: "她父亲逼她来的，我……我只是个工具。", breakthrough: true }
+                  ] }
+            ]
+        }
+    },
+    1: {
+        id:1, series:"破云", title:"619血衣仪式化绑架案", tag:"tag-poyun", tagName:"破云·进阶",
+        desc:"红心Q仪式复刻，步薇策划的'考验'",
+        initialInfo: {
+            deathScene: "陵州荒野山区，绑架现场。",
+            bodyCondition: "受害者被捆绑、蒙眼，现场有血衣照片。",
+            keyFacts: "1.申晓奇组织野营，二人被绑架；2.步薇是实际策划者。"
+        },
+        evd: [
+            {id:"e12", name:"血衣照片", desc:"浸透鲜血的T恤照片", detail:"绑匪寄给家属的勒索物证。"},
+            {id:"e13", name:"勒索电话录音", desc:"绑匪索要两亿赎金", detail:"行刑才是主要目的。"}
+        ],
+        persons: [
+            {id:"p6", name:"步薇", role:"绑架案受害者/实际策划者", desc:"实际策划绑架。目标是成为'红心Q'。"},
+            {id:"p7", name:"汪兴业", role:"绑架执行人", desc:"被步薇利用。事后被黑桃K灭口。"}
+        ],
+        places: [{id:"l2", name:"陵州荒野山区", desc:"绑架案发生地"}],
+        quiz:[
+            {q:"619血衣绑架案的真正策划者是谁？", options:["黑桃K","汪兴业","步薇","申晓奇"], correct:2},
+            {q:"步薇策划绑架的目的是什么？", options:["勒索赎金","通过'考验'成为红心Q","报复申晓奇","帮助汪兴业"], correct:1}
+        ],
+        report:{culprit:"步薇（策划者）+ 汪兴业（执行人）",motive:"步薇意图通过'考验'取代江停成为'红心Q'",summary:"步薇精心策划绑架案，利用汪兴业实施绑架。"},
+        interrogate: {
+            suspects: [
+                { id: "p6", name: "步薇", desc: "绑架案受害者/实际策划者。",
+                  questions: [
+                      { q: "你为什么要策划绑架？", answer: "我需要证明自己……我比江停更配得上'红心Q'。", breakthrough: false },
+                      { q: "你知道黑桃K的过去吗？", answer: "那个仪式……是黑桃K幼年的创伤重演。我也是棋子。", breakthrough: true }
+                  ] }
+            ]
+        }
+    },
+    2: {
+        id:2, series:"破云", title:"118码头乌毒凶杀案", tag:"tag-poyun", tagName:"破云·进阶",
+        desc:"秦川立场拐点，43码定制皮鞋鞋印锁定秦川",
+        initialInfo: {
+            deathScene: "建宁内河码头，死者被锐器高位压制刺杀。",
+            bodyCondition: "现场发现97%高纯度乌毒结晶。",
+            keyFacts: "1.现场发现97%高纯度乌毒结晶；2.现场发现43码定制皮鞋鞋印，与秦川完全吻合。"
+        },
+        evd: [
+            {id:"e20", name:"97%高纯度乌毒结晶", desc:"跨境原生批次毒品", detail:"确认大型分销节点。"},
+            {id:"e23", name:"43码定制皮鞋鞋印", desc:"现场核心物证", detail:"足迹3D建模与秦川私鞋完全一致。"}
+        ],
+        persons: [
+            {id:"p9", name:"秦川", role:"建宁禁毒支队副支队长/黑桃K内应", desc:"现场鞋印吻合。亦正亦邪。"}
+        ],
+        places: [{id:"l3", name:"建宁内河码头", desc:"乌毒凶杀案现场"}],
+        quiz:[
+            {q:"现场发现的43码定制皮鞋鞋印属于谁？", options:["严峫","秦川","黑桃K","胡伟胜"], correct:1},
+            {q:"秦川真实想除掉的目标是谁？", options:["严峫","江停","黑桃K","胡伟胜"], correct:2}
+        ],
+        report:{culprit:"分销骨干（直接行凶）+ 秦川（提供掩护）",motive:"秦川真正想除掉的目标始终是黑桃K。",summary:"秦川的鞋印和监控删除记录形成了完整的证据链。"},
+        interrogate: {
+            suspects: [
+                { id: "p9", name: "秦川", desc: "建宁禁毒支队副支队长，黑桃K内应。",
+                  questions: [
+                      { q: "你的鞋印为什么会出现在现场？", answer: "我……我确实去过码头，但我是去调查。", breakthrough: false },
+                      { q: "你真正想杀的人是谁？", answer: "黑桃K。我一生都在等这个机会。", breakthrough: true }
+                  ] }
+            ]
+        }
+    },
+    3: {
+        id:3, series:"破云", title:"恭州3·22特大缉毒爆炸案", tag:"tag-poyun", tagName:"破云·终章",
+        desc:"全书原点，红心Q真实归属：江停卧底代号。",
+        initialInfo: {
+            deathScene: "恭州城郊废弃化工厂，连环爆炸。",
+            bodyCondition: "多人伤亡，现场一片废墟。",
+            keyFacts: "1.红心Q是草花A吴吞授予江停的卧底代号；2.蓝金来源于S省瑶山工厂。"
+        },
+        evd: [
+            {id:"e26", name:"红心Q真实归属", desc:"红心Q是草花A吴吞授予江停的卧底代号", detail:"非黑桃K专属标记。"},
+            {id:"e27", name:"瑶山工厂", desc:"蓝金毒品工业化合成基地", detail:"位于S省瑶山地下。"}
+        ],
+        persons: [
+            {id:"p10", name:"江停", role:"建宁刑侦支队长/红心Q", desc:"主动打入贩毒集团的双面卧底。"},
+            {id:"p8", name:"黑桃K（闻劭）", role:"跨国毒枭组织首脑", desc:"爆炸案幕后主使。"}
+        ],
+        places: [
+            {id:"l4", name:"恭州城郊废弃化工厂", desc:"爆炸发生地"},
+            {id:"l5", name:"瑶山工厂", desc:"S省瑶山地下制毒基地"}
+        ],
+        quiz: [
+            {q:"红心Q代号属于谁？", options:["黑桃K","江停","草花A","方片J"], correct:1},
+            {q:"蓝金毒品生产基地位于哪里？", options:["岚山工厂","瑶山工厂","恭州工厂","建宁工厂"], correct:1}
+        ],
+        report: {
+            culprit:"黑桃K（闻劭）策划",
+            motive:"黑桃K夺取瑶山工厂控制权。",
+            summary:"恭州爆炸案核心原因是公安高层内奸方片J出卖情报。"
+        },
+        interrogate: {
+            suspects: [
+                { id: "p13", name: "方片J", desc: "公安高层内奸，情报泄露源头。",
+                  questions: [
+                      { q: "为什么出卖情报？", answer: "黑桃K抓住了我的把柄……我别无选择。", breakthrough: false },
+                      { q: "红心Q到底是谁？", answer: "是江停。草花A授予他的代号。", breakthrough: true }
+                  ] }
+            ]
+        }
+    },
+    4: {
+        id:4, series:"吞海", title:"四里河骷髅案", tag:"tag-tunhai", tagName:"吞海·开篇",
+        desc:"《吞海》起点案件，引出暗网'马里亚纳海沟'与'画师'身份",
+        initialInfo: {
+            deathScene: "津海四里河，雨夜。少女年小萍被杀。",
+            bodyCondition: "死者年小萍，死因为机械性窒息。",
+            keyFacts: "1.骷髅头盔是被倒卖的文物；2.案件牵出暗网'马里亚纳海沟'。"
+        },
+        evd: [
+            {id:"t1", name:"骷髅头盔", desc:"凶手佩戴的文物头盔", detail:"被倒卖的文物。"},
+            {id:"t3", name:"暗网'马里亚纳海沟'", desc:"跨国暗网交易平台", detail:"头目'鲨鱼'。"}
+        ],
+        persons: [
+            {id:"p14", name:"吴雩", role:"津海市局刑警/卧底画师", desc:"代号'画师'。"},
+            {id:"p16", name:"鲨鱼", role:"暗网'马里亚纳海沟'头目", desc:"幕后黑手。"}
+        ],
+        places: [{id:"l6", name:"津海四里河", desc:"年小萍被杀现场"}],
+        quiz:[
+            {q:"凶手佩戴的物品是什么？", options:["面具","骷髅头盔","头套","帽子"], correct:1}
+        ],
+        report:{culprit:"鲨鱼（暗网头目）幕后操控",summary:"四里河骷髅案是《吞海》的起点。"},
+        interrogate: {
+            suspects: [
+                { id: "p14", name: "吴雩", desc: "卧底画师，身份暴露。",
+                  questions: [
+                      { q: "你的代号'画师'是怎么来的？", answer: "……是组织给的。", breakthrough: false },
+                      { q: "你打算怎么面对身份暴露？", answer: "我会继续走下去，直到抓住鲨鱼。", breakthrough: true }
+                  ] }
+            ]
+        }
+    },
+    5: {
+        id:5, series:"吞海", title:"828密室绑架杀人案", tag:"tag-tunhai", tagName:"吞海·进阶",
+        desc:"多方势力交锋，步重华伪装'叛变'潜入暗网",
+        initialInfo: {
+            deathScene: "津海某高档住宅区，密室杀人案。",
+            bodyCondition: "彭宛被绑架，现场发生密室杀人案。",
+            keyFacts: "1.步重华伪装'叛变'深入暗网。"
+        },
+        evd: [
+            {id:"t5", name:"密室杀人现场", desc:"证据指向步重华", detail:"实为栽赃。"},
+            {id:"t6", name:"步重华'叛变'记录", desc:"伪装叛变潜入暗网", detail:"假借叛变打入内部。"}
+        ],
+        persons: [
+            {id:"p15", name:"步重华", role:"津海刑侦支队长", desc:"伪装'叛变'潜入暗网。"}
+        ],
+        places: [{id:"l7", name:"津海高档住宅区", desc:"密室杀人案现场"}],
+        quiz:[
+            {q:"步重华在828案中做了什么？", options:["正式叛变","伪装'叛变'潜入暗网","逮捕张志兴","保护彭宛"], correct:1}
+        ],
+        report:{culprit:"多方势力交锋",summary:"828密室绑架杀人案中，步重华伪装'叛变'深入暗网。"},
+        interrogate: {
+            suspects: [
+                { id: "p15", name: "步重华", desc: "津海刑侦支队长，伪装叛变。",
+                  questions: [
+                      { q: "你为什么要伪装叛变？", answer: "为了打入暗网内部，抓住鲨鱼。", breakthrough: false },
+                      { q: "解行的牺牲对你意味着什么？", answer: "那是我们共同的伤疤。", breakthrough: true }
+                  ] }
+            ]
+        }
+    },
+    6: {
+        id:6, series:"吞海", title:"矿井制毒案", tag:"tag-tunhai", tagName:"吞海·终章",
+        desc:"终局之战，吴雩亲手逮捕'鲨鱼'，暗网覆灭",
+        initialInfo: {
+            deathScene: "废弃矿井深处，暗网'马里亚纳海沟'核心据点。",
+            bodyCondition: "矿井内设有制毒工厂。",
+            keyFacts: "1.吴雩亲手逮捕'鲨鱼'；2.暗网覆灭。"
+        },
+        evd: [
+            {id:"t8", name:"矿井制毒工厂", desc:"蓝金生产线", detail:"缴获大量蓝金。"},
+            {id:"t9", name:"鲨鱼被捕记录", desc:"吴雩亲手逮捕鲨鱼", detail:"暗网覆灭。"}
+        ],
+        persons: [
+            {id:"p14", name:"吴雩", role:"卧底画师", desc:"亲手逮捕'鲨鱼'，身份洗白。"},
+            {id:"p16", name:"鲨鱼", role:"暗网头目", desc:"在矿井中被捕。"}
+        ],
+        places: [{id:"l8", name:"废弃矿井", desc:"终局之战发生地"}],
+        quiz:[
+            {q:"谁亲手逮捕了'鲨鱼'？", options:["步重华","吴雩","秦川","严峫"], correct:1}
+        ],
+        report:{culprit:"鲨鱼（暗网头目）",summary:"矿井制毒案是《吞海》的终局之战。"},
+        interrogate: {
+            suspects: [
+                { id: "p16", name: "鲨鱼", desc: "暗网'马里亚纳海沟'头目。",
+                  questions: [
+                      { q: "你认识'画师'吗？", answer: "那个卧底……他毁了我的一切。", breakthrough: false },
+                      { q: "你还有什么想说的？", answer: "……我输了。但这场游戏永远不会结束。", breakthrough: true }
+                  ] }
+            ]
+        }
+    }
+};
+
+function getCase(id) { return caseDB[id] || caseDB[0]; }
+
+function saveProgress() {
+    localStorage.setItem('policeCaseArchiveSave', JSON.stringify(saveData));
+    updateProgress();
+}
+function updateProgress() {
+    document.getElementById('globalProgress').textContent = '进度：' + saveData.clear.length + '/7 办结';
+}
+
+function switchModule(modId) {
+    document.querySelectorAll('.module').forEach(function(m){ m.classList.remove('active'); });
+    var target = document.getElementById('mod-'+modId);
+    if(target) target.classList.add('active');
+    document.querySelectorAll('.sidebar-btn').forEach(function(b){ b.classList.remove('active'); });
+    var btn = document.querySelector('.sidebar-btn[data-mod="'+modId+'"]');
+    if(btn) btn.classList.add('active');
+    if(modId === 'archive') { renderArchive(); renderArchiveInterrogationChat(); renderChatRoom(); }
+    if(modId === 'finished') renderFinished();
+    if(modId === 'search') { renderSearch(); renderInterrogateRoom(); renderInterrogationChat(); renderParallel(); }
+    if(modId === 'clues') renderClues();
+    if(modId === 'quiz') renderQuiz();
+    if(modId === 'report') renderReport();
+    if(modId === 'overview') renderOverview();
+}
+
+function renderArchive() {
+    var grid = document.getElementById('archiveGrid');
+    var html = '';
+    for(var key in caseDB) {
+        var c = caseDB[key];
+        var unlocked = saveData.unlock[key] || false;
+        var cleared = saveData.clear.indexOf(parseInt(key)) !== -1;
+        var isCurrent = (saveData.currentCase === parseInt(key));
+        var seriesBadge = c.series === '破云' ? 'badge-poyun' : 'badge-tunhai';
+        html += '<div class="archive-item '+(unlocked?'unlock':'lock')+'" onclick="'+(unlocked?'openCase('+key+')':'')+'" style="'+(unlocked?'':'cursor:not-allowed;')+'">';
+        html += '<span class="archive-tag '+c.tag+'">'+c.tagName+'</span>';
+        html += '<span class="series-badge '+seriesBadge+'">'+c.series+'</span>';
+        html += '<div style="font-weight:bold;font-size:14px;margin-top:4px;">'+c.title+'</div>';
+        html += '<div class="archive-desc">'+c.desc+'</div>';
+        if(cleared) html += '<div style="margin-top:6px;"><span class="badge-complete">✅ 已办结</span></div>';
+        if(isCurrent && !cleared) html += '<div style="margin-top:6px;"><span class="case-open-badge">🔍 侦查中</span></div>';
+        if(!unlocked) html += '<div style="margin-top:6px;color:var(--police-gray);font-size:11px;">🔒 需办结前置案件</div>';
+        html += '</div>';
+    }
+    grid.innerHTML = html;
+}
+
+function renderFinished() {
+    var container = document.getElementById('finishedList');
+    var cleared = saveData.clear;
+    if(cleared.length === 0) { container.innerHTML = '<div style="color:var(--police-gray);text-align:center;padding:40px 0;">暂无办结卷宗</div>'; return; }
+    var html = '';
+    cleared.forEach(function(id){
+        var c = getCase(id);
+        html += '<div style="border:1px solid var(--police-border);border-radius:6px;padding:14px;margin-bottom:10px;background:#ffffff;">';
+        html += '<div style="font-weight:bold;">'+c.title+'</div>';
+        html += '<div style="font-size:12px;color:var(--police-gray);">'+c.desc+'</div>';
+        html += '<div style="font-size:12px;color:var(--police-green);margin-top:6px;">✅ 已办结 · 真凶：'+c.report.culprit+'</div>';
+        html += '</div>';
+    });
+    container.innerHTML = html;
+}
+
+function openCase(id) {
+    if(!saveData.unlock[id]) { 
+        alert('⚠️ 该卷宗尚未解锁，请先办结前置案件。'); 
+        return; 
+    }
+    saveData.currentCase = id;
+    currentCID = id;
+    currentCaseData = getCase(id);
+    
+    saveData.foundClues = [];
+    saveData.quizAnswers = {};
+    if(!saveData.interrogateProgress) saveData.interrogateProgress = {};
+    saveData.interrogateProgress[id] = {};
+    saveData.interrogationLog = []; // 清空审讯记录
+    saveProgress();
+    
+    switchModule('search');
+    renderSearch();
+    renderClues();
+    renderInterrogateRoom();
+    renderInterrogationChat();
+    renderArchiveInterrogationChat();
+    renderQuiz();
+    renderReport();
+    renderParallel();
+    document.querySelectorAll('.sidebar-btn').forEach(function(b){ b.classList.remove('active'); });
+    var btn = document.querySelector('.sidebar-btn[data-mod="search"]');
+    if(btn) btn.classList.add('active');
+}
+
+function renderSearch() {
+    var cid = saveData.currentCase;
+    var title = document.getElementById('searchProgress');
+    var container = document.getElementById('initialInfoContainer');
+    if(cid === -1 || cid === undefined) {
+        title.textContent = '请先打开卷宗';
+        container.innerHTML = '';
+        return;
+    }
+    var c = getCase(cid);
+    var found = saveData.foundClues || [];
+    var total = getCaseTotalClues(c);
+    title.textContent = '— ['+c.series+'] '+c.title+' | 已发现 '+found.length+'/'+total+' 条线索';
+    if(c.initialInfo) {
+        container.innerHTML = '<div class="initial-info"><div class="label">🔴 案发现场基本情况</div>'+
+            '<div class="detail"><strong>死亡地点：</strong>'+c.initialInfo.deathScene+'</div>'+
+            '<div class="detail"><strong>尸体状况：</strong>'+c.initialInfo.bodyCondition+'</div>'+
+            '<div class="detail"><strong>关键事实：</strong>'+c.initialInfo.keyFacts+'</div>'+
+            '<div style="margin-top:8px;font-size:12px;color:var(--police-gray);">💡 根据以上信息推理关键词进行搜索。</div></div>';
+    }
+}
+
+function getCaseTotalClues(c) {
+    return (c.evd ? c.evd.length : 0) + (c.persons ? c.persons.length : 0) + (c.places ? c.places.length : 0);
+}
+
+function performSearch() {
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) { alert('请先打开卷宗'); return; }
+    var c = getCase(cid);
+    var input = document.getElementById('searchInput').value.trim();
+    var type = document.getElementById('searchType').value;
+    if(!input) { alert('请输入搜索关键词'); return; }
+    var resultDiv = document.getElementById('searchResult');
+    var html = '';
+    var matchedItems = [];
+    if(type === 'all' || type === 'evd') {
+        if(c.evd) {
+            c.evd.forEach(function(e){
+                if(e.name.indexOf(input) !== -1 || input.indexOf(e.name) !== -1 || e.desc.indexOf(input) !== -1) {
+                    var alreadyFound = (saveData.foundClues || []).indexOf('e'+e.id) !== -1;
+                    matchedItems.push({ type:'evd', id:'e'+e.id, name:e.name, desc:e.desc, detail:e.detail, alreadyFound:alreadyFound });
+                }
+            });
+        }
+    }
+    if(type === 'all' || type === 'person') {
+        if(c.persons) {
+            c.persons.forEach(function(p){
+                if(p.name.indexOf(input) !== -1 || input.indexOf(p.name) !== -1 || p.role.indexOf(input) !== -1) {
+                    var alreadyFound = (saveData.foundClues || []).indexOf('p'+p.id) !== -1;
+                    matchedItems.push({ type:'person', id:'p'+p.id, name:p.name, role:p.role, desc:p.desc, alreadyFound:alreadyFound });
+                }
+            });
+        }
+    }
+    if(type === 'all' || type === 'place') {
+        if(c.places) {
+            c.places.forEach(function(l){
+                if(l.name.indexOf(input) !== -1 || input.indexOf(l.name) !== -1) {
+                    var alreadyFound = (saveData.foundClues || []).indexOf('l'+l.id) !== -1;
+                    matchedItems.push({ type:'place', id:'l'+l.id, name:l.name, desc:l.desc, alreadyFound:alreadyFound });
+                }
+            });
+        }
+    }
+    if(matchedItems.length > 0) {
+        matchedItems.forEach(function(item){
+            var tagHtml = '', detailHtml = '';
+            if(item.type === 'evd') {
+                tagHtml = '<span class="tag tag-evd">🔬 物证</span>';
+                detailHtml = '<div style="font-size:13px;color:var(--police-gray);margin-top:4px;">'+item.desc+'</div><div style="font-size:12px;color:#4b5563;margin-top:4px;background:#f0f5fb;padding:6px 10px;border-radius:4px;">'+item.detail+'</div>';
+            } else if(item.type === 'person') {
+                tagHtml = '<span class="tag tag-person">👤 人物</span>';
+                detailHtml = '<div style="font-size:13px;color:var(--police-gray);margin-top:4px;">'+item.role+'</div><div style="font-size:12px;color:#4b5563;margin-top:4px;">'+item.desc+'</div>';
+            } else if(item.type === 'place') {
+                tagHtml = '<span class="tag tag-place">📍 地点</span>';
+                detailHtml = '<div style="font-size:13px;color:var(--police-gray);margin-top:4px;">'+item.desc+'</div>';
+            }
+            var btnHtml = !item.alreadyFound ? '<div style="margin-top:6px;"><button class="police-btn" style="padding:4px 14px;font-size:12px;cursor:pointer;background:var(--police-blue);color:#fff;border:none;border-radius:4px;" onclick="addClue(\''+item.id+'\')">➕ 记录线索</button></div>' : '<div style="color:var(--police-green);font-size:12px;margin-top:4px;">✅ 已记录</div>';
+            html += '<div class="result-item">'+tagHtml+' <span class="found">'+item.name+'</span> '+detailHtml+' '+btnHtml+'</div>';
+        });
+        resultDiv.innerHTML = html;
+    } else {
+        resultDiv.innerHTML = '<div class="not-found" style="text-align:center;padding:20px 0;">❌ 未找到与 "'+input+'" 相关的线索</div>';
+    }
+}
+
+function addClue(id) {
+    if(!saveData.foundClues) saveData.foundClues = [];
+    if(saveData.foundClues.indexOf(id) !== -1) return;
+    
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) {
+        alert('请先打开卷宗');
+        return;
+    }
+    var c = getCase(cid);
+    
+    var belongsToCase = false;
+    var type = id[0];
+    var idx = id.substring(1);
+    if(type === 'e') {
+        belongsToCase = c.evd && c.evd.some(function(e) { return e.id === idx; });
+    } else if(type === 'p') {
+        belongsToCase = c.persons && c.persons.some(function(p) { return p.id === idx; });
+    } else if(type === 'l') {
+        belongsToCase = c.places && c.places.some(function(pl) { return pl.id === idx; });
+    }
+    if(!belongsToCase) {
+        alert('⚠️ 该线索不属于当前案件！');
+        return;
+    }
+    
+    saveData.foundClues.push(id);
+    saveProgress();
+    renderSearch();
+    renderClues();
+    renderInterrogateRoom();
+    renderInterrogationChat();
+    renderArchiveInterrogationChat();
+    renderQuiz();
+    renderParallel();
+}
+
+function renderClues() {
+    var cid = saveData.currentCase;
+    var empty = document.getElementById('cluesEmpty');
+    var list = document.getElementById('cluesList');
+    var count = document.getElementById('clueCount');
+    var progressFill = document.getElementById('clueProgressFill');
+    var progressText = document.getElementById('clueProgressText');
+    if(cid === -1 || cid === undefined) {
+        empty.style.display = 'block'; list.innerHTML = ''; count.textContent = '';
+        if(progressFill) progressFill.style.width = '0%';
+        if(progressText) progressText.textContent = '0 / 0 线索已发现';
+        return;
+    }
+    var c = getCase(cid);
+    var found = saveData.foundClues || [];
+    var total = getCaseTotalClues(c);
+    count.textContent = '('+found.length+'/'+total+')';
+    var pct = total > 0 ? (found.length/total)*100 : 0;
+    if(progressFill) progressFill.style.width = pct + '%';
+    if(progressText) progressText.textContent = found.length + ' / ' + total + ' 线索已发现';
+    if(found.length === 0) {
+        empty.style.display = 'block'; list.innerHTML = ''; return;
+    }
+    empty.style.display = 'none';
+    var html = '<div class="clue-list">';
+    found.forEach(function(id){
+        var type = id[0];
+        var idx = id.substring(1);
+        var name = '';
+        if(type === 'e') { var e = c.evd.find(function(ev){ return ev.id === idx; }); if(e) name = '🔬 ' + e.name; }
+        else if(type === 'p') { var p = c.persons.find(function(pe){ return pe.id === idx; }); if(p) name = '👤 ' + p.name; }
+        else if(type === 'l') { var l = c.places.find(function(pl){ return pl.id === idx; }); if(l) name = '📍 ' + l.name; }
+        html += '<span class="clue-badge found">'+(name || id)+'</span>';
+    });
+    html += '</div>';
+    list.innerHTML = html;
+}
+
+// ========== 审讯室 ==========
+function renderInterrogateRoom() {
+    var room = document.getElementById('interrogateRoom');
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) {
+        room.innerHTML = '<div class="empty-msg">📂 请先打开一个案件卷宗，审讯室将自动启用。</div>';
+        return;
+    }
+    var c = getCase(cid);
+    if(!c.interrogate || !c.interrogate.suspects || c.interrogate.suspects.length === 0) {
+        room.innerHTML = '<div class="empty-msg">🔍 该案件暂无审问对象。</div>';
+        return;
+    }
+    
+    if(!saveData.interrogateProgress) saveData.interrogateProgress = {};
+    if(!saveData.interrogateProgress[cid]) saveData.interrogateProgress[cid] = {};
+    var prog = saveData.interrogateProgress[cid];
+    
+    var html = '<div class="room-title">🎙️ 审讯室 <span class="badge">实时</span></div>';
+    c.interrogate.suspects.forEach(function(suspect){
+        if(!prog[suspect.id]) prog[suspect.id] = { asked: [], breakthrough: false };
+        var sProg = prog[suspect.id];
+        var breakthrough = sProg.breakthrough || false;
+        
+        html += '<div class="suspect-block">';
+        html += '<div class="suspect-name">🧑‍⚖️ '+suspect.name+'</div>';
+        html += '<div class="suspect-desc">'+suspect.desc+'</div>';
+        html += '<div style="margin-bottom:8px;"><span class="status-tag '+(breakthrough?'breakthrough':'resistant')+'">'+(breakthrough?'✅ 已突破':'⛔ 抗拒审问')+'</span></div>';
+        
+        suspect.questions.forEach(function(q, qi){
+            var asked = sProg.asked.indexOf(qi) !== -1;
+            var disabled = breakthrough || asked;
+            html += '<div style="margin:4px 0;">';
+            html += '<button class="question-btn" '+(disabled?'disabled':'')+' onclick="askQuestionInRoom('+cid+',\''+suspect.id+'\','+qi+')">'+(asked?'✅ ':'❓ ')+q.q+'</button>';
+            if(asked) {
+                html += '<span class="answer-text">→ '+q.answer+'</span>';
+                if(q.breakthrough) html += ' <span class="breakthrough-tag">💥 关键突破！</span>';
+            }
+            html += '</div>';
+        });
+        html += '</div>';
+    });
+    room.innerHTML = html;
+}
+
+// ========== 提问并记录到审讯日志 ==========
+function askQuestionInRoom(cid, suspectId, qIdx) {
+    if(!saveData.interrogateProgress) saveData.interrogateProgress = {};
+    if(!saveData.interrogateProgress[cid]) saveData.interrogateProgress[cid] = {};
+    var prog = saveData.interrogateProgress[cid];
+    if(!prog[suspectId]) prog[suspectId] = { asked: [], breakthrough: false };
+    var sProg = prog[suspectId];
+    if(sProg.asked.indexOf(qIdx) !== -1) return;
+    if(sProg.breakthrough) return;
+    
+    var c = getCase(cid);
+    var suspect = c.interrogate.suspects.find(function(s){ return s.id === suspectId; });
+    if(!suspect) return;
+    var q = suspect.questions[qIdx];
+    if(!q) return;
+    
+    sProg.asked.push(qIdx);
+    
+    // 记录到审讯日志
+    if(!saveData.interrogationLog) saveData.interrogationLog = [];
+    var timestamp = new Date().toLocaleString('zh-CN', { hour12: false });
+    saveData.interrogationLog.push({
+        caseId: cid,
+        caseTitle: c.title,
+        suspect: suspect.name,
+        question: q.q,
+        answer: q.answer,
+        breakthrough: q.breakthrough,
+        timestamp: timestamp
+    });
+    
+    if(q.breakthrough) {
+        sProg.breakthrough = true;
+        var clueId = 'p' + suspectId;
+        if(saveData.foundClues.indexOf(clueId) === -1) {
+            saveData.foundClues.push(clueId);
+        }
+        alert('💥 关键突破！' + suspect.name + ' 交代了重要信息！线索已自动记录。');
+    }
+    saveProgress();
+    renderInterrogateRoom();
+    renderClues();
+    renderSearch();
+    renderQuiz();
+    renderParallel();
+    renderInterrogationChat();
+    renderArchiveInterrogationChat();
+}
+
+// ========== 审讯对话独立区域 ==========
+function renderInterrogationChat() {
+    var container = document.getElementById('interrogationChatSection');
+    var cid = saveData.currentCase;
+    
+    var html = '<div class="section-title">🎙️ 审讯对话记录 <span class="badge">已归档</span></div>';
+    
+    if(cid === -1 || cid === undefined) {
+        html += '<div class="empty-msg">📂 请先打开一个案件卷宗，审讯对话将自动记录于此。</div>';
+        container.innerHTML = html;
+        return;
+    }
+    
+    var c = getCase(cid);
+    var log = saveData.interrogationLog || [];
+    var caseLogs = log.filter(function(item) { return item.caseId === cid; });
+    
+    if(caseLogs.length === 0) {
+        html += '<div class="empty-msg">🔍 当前案件暂无审讯记录。请在上方审讯室中对嫌疑人进行审问。</div>';
+        html += '<div style="margin-top:8px;"><button class="jump-btn" onclick="document.getElementById(\'interrogateRoom\').scrollIntoView({behavior:\'smooth\'})">⬆️ 前往审讯室</button></div>';
+        container.innerHTML = html;
+        return;
+    }
+    
+    var total = caseLogs.length;
+    var breakthroughCount = caseLogs.filter(function(item) { return item.breakthrough; }).length;
+    html += '<div class="chat-stats">📊 共 ' + total + ' 条记录，关键突破 ' + breakthroughCount + ' 次</div>';
+    
+    html += '<div class="chat-list">';
+    caseLogs.forEach(function(item) {
+        html += '<div class="chat-msg">';
+        html += '<span class="speaker">👤 你</span>：' + item.question;
+        html += ' <span class="chat-timestamp">' + item.timestamp + '</span>';
+        html += '</div>';
+        html += '<div class="chat-msg" style="border-left-color:#6c3483;">';
+        html += '<span class="speaker suspect">🧑‍⚖️ ' + item.suspect + '</span>：' + item.answer;
+        if(item.breakthrough) html += ' <span class="breakthrough-tag">💥 关键突破</span>';
+        html += '</div>';
+    });
+    html += '</div>';
+    
+    html += '<div class="chat-actions">';
+    html += '<button class="jump-btn" onclick="exportInterrogationLog()">📤 导出记录</button>';
+    html += '<button class="jump-btn" style="color:var(--police-red);border-color:var(--police-red);" onclick="clearInterrogationLog()">🗑️ 清空记录</button>';
+    html += '</div>';
+    
+    container.innerHTML = html;
+}
+
+// ========== 归档中心审讯对话 ==========
+function renderArchiveInterrogationChat() {
+    var container = document.getElementById('archiveInterrogationChat');
+    var cid = saveData.currentCase;
+    
+    var html = '<div class="chat-title">🎙️ 归档审讯记录 <span style="font-size:12px;color:var(--police-gray);font-weight:normal;">— 案件归档中心</span></div>';
+    
+    if(cid === -1 || cid === undefined) {
+        html += '<div class="empty-msg">📂 请先打开卷宗</div>';
+        container.innerHTML = html;
+        return;
+    }
+    
+    var log = saveData.interrogationLog || [];
+    var caseLogs = log.filter(function(item) { return item.caseId === cid; });
+    
+    if(caseLogs.length === 0) {
+        html += '<div class="empty-msg">🔍 暂无审讯记录</div>';
+        html += '<div style="margin-top:8px;"><button class="jump-btn" onclick="switchModule(\'search\')">🔍 前往审讯</button></div>';
+        container.innerHTML = html;
+        return;
+    }
+    
+    var total = caseLogs.length;
+    var breakthroughCount = caseLogs.filter(function(item) { return item.breakthrough; }).length;
+    html += '<div class="chat-stats">📊 ' + total + ' 条记录，' + breakthroughCount + ' 次突破</div>';
+    
+    html += '<div class="chat-list">';
+    caseLogs.slice(-10).forEach(function(item) {
+        html += '<div class="chat-msg">';
+        html += '<span class="speaker">👤 你</span>：' + item.question;
+        html += '</div>';
+        html += '<div class="chat-msg" style="border-left-color:#6c3483;">';
+        html += '<span class="speaker suspect">🧑‍⚖️ ' + item.suspect + '</span>：' + item.answer;
+        if(item.breakthrough) html += ' <span class="breakthrough-tag">💥</span>';
+        html += '</div>';
+    });
+    if(caseLogs.length > 10) {
+        html += '<div style="color:var(--police-gray);font-size:12px;padding:4px 0;">... 共 ' + caseLogs.length + ' 条，<a href="#" onclick="switchModule(\'search\')" style="color:var(--police-blue);">查看全部</a></div>';
+    }
+    html += '</div>';
+    
+    html += '<div style="margin-top:8px;"><button class="jump-btn" onclick="switchModule(\'search\')">🔍 查看完整记录</button></div>';
+    container.innerHTML = html;
+}
+
+// ========== 导出审讯记录 ==========
+function exportInterrogationLog() {
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) { alert('请先打开卷宗'); return; }
+    var c = getCase(cid);
+    var log = saveData.interrogationLog || [];
+    var caseLogs = log.filter(function(item) { return item.caseId === cid; });
+    
+    if(caseLogs.length === 0) {
+        alert('当前案件暂无审讯记录可导出。');
+        return;
+    }
+    
+    var text = '=== 审讯记录导出 ===\n';
+    text += '案件：' + c.title + '\n';
+    text += '导出时间：' + new Date().toLocaleString('zh-CN', { hour12: false }) + '\n';
+    text += '共 ' + caseLogs.length + ' 条记录\n';
+    text += '========================\n\n';
+    
+    caseLogs.forEach(function(item, index) {
+        text += '【第 ' + (index + 1) + ' 轮】' + item.timestamp + '\n';
+        text += '审问人：你\n';
+        text += '问题：' + item.question + '\n';
+        text += '回答（' + item.suspect + '）：' + item.answer;
+        if(item.breakthrough) text += ' 💥关键突破';
+        text += '\n\n';
+    });
+    
+    var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = '审讯记录_' + c.title + '_' + new Date().toISOString().slice(0,10) + '.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+}
+
+// ========== 清空审讯记录 ==========
+function clearInterrogationLog() {
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) { alert('请先打开卷宗'); return; }
+    if(!confirm('⚠️ 确定清空当前案件的所有审讯记录吗？此操作不可撤销！')) return;
+    var log = saveData.interrogationLog || [];
+    saveData.interrogationLog = log.filter(function(item) { return item.caseId !== cid; });
+    saveProgress();
+    renderInterrogationChat();
+    renderArchiveInterrogationChat();
+    alert('✅ 已清空当前案件的审讯记录。');
+}
+
+// ========== 角色闲聊 ==========
+function renderChatRoom() {
+    var container = document.getElementById('chatRoom');
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) {
+        container.innerHTML = '<div class="chat-title">💬 角色闲聊 <span style="font-size:12px;color:var(--police-gray);font-weight:normal;">— 与案件角色自由对话</span></div><div style="color:var(--police-gray);padding:12px;">请先打开卷宗，与角色展开闲聊。</div>';
+        return;
+    }
+    var c = getCase(cid);
+    var chatHistory = saveData.chatHistory || [];
+    var chatHtml = '<div class="chat-title">💬 角色闲聊 <span style="font-size:12px;color:var(--police-gray);font-weight:normal;">— 与案件角色自由对话</span></div>';
+    chatHtml += '<div id="chatMessages" style="max-height:200px;overflow-y:auto;margin-bottom:8px;">';
+    if(chatHistory.length === 0) {
+        chatHtml += '<div style="color:var(--police-gray);padding:6px 0;">开始与角色对话吧。</div>';
+    } else {
+        chatHistory.forEach(function(msg){
+            chatHtml += '<div class="chat-msg"><span class="speaker">' + (msg.speaker === 'user' ? '👤 你' : '🧑‍⚖️ ' + msg.speaker) + '</span>：' + msg.text + '</div>';
+        });
+    }
+    chatHtml += '</div>';
+    chatHtml += '<div class="chat-input-group"><input type="text" id="chatInput" placeholder="输入你想说的话..." onkeydown="if(event.key===\'Enter\') sendChatMessage()"><button onclick="sendChatMessage()">发送</button></div>';
+    container.innerHTML = chatHtml;
+}
+
+function sendChatMessage() {
+    var input = document.getElementById('chatInput');
+    if(!input) return;
+    var text = input.value.trim();
+    if(!text) return;
+    var cid = saveData.currentCase;
+    if(cid === -1 || cid === undefined) { alert('请先打开卷宗'); return; }
+    var c = getCase(cid);
+    if(!c.persons || c.persons.length === 0) { alert('该案件无角色可对话'); return; }
+    var randomPerson = c.persons[Math.floor(Math.random() * c.persons.length)];
+    if(!saveData.chatHistory) saveData.chatHistory = [];
+    saveData.chatHistory.push({ speaker: 'user', text: text });
+    var replies = [
+        '嗯…你说得有道理。', '我不太清楚你在说什么。', '这个案子确实很复杂。',
+        '你觉得真相是什么？', '我有点累了，能改天再聊吗？', '你让我想起了很多事情。',
+        '也许我们该换个角度思考。', '我没什么可说的了。'
+    ];
+    var reply = replies[Math.floor(Math.random() * replies.length)];
+    saveData.chatHistory.push({ speaker: randomPerson.name, text: reply });
+    saveProgress();
+    renderChatRoom();
+    input.value = '';
+}
+
+// ========== 并行模块 ==========
+function renderParallel() {
+    var cid = saveData.currentCase;
+    var cluesContainer = document.getElementById('cluesParallelContent');
+    var quizContainer = document.getElementById('quizParallelContent');
+    
+    if(cid === -1 || cid === undefined) {
+        cluesContainer.innerHTML = '请先打开卷宗';
+        quizContainer.innerHTML = '请先打开卷宗';
+        return;
+    }
+    var c = getCase(cid);
+    var found = saveData.foundClues || [];
+    var total = getCaseTotalClues(c);
+    
+    if(found.length === 0) {
+        cluesContainer.innerHTML = '<span style="color:var(--police-gray);">尚未发现任何线索</span>';
+    } else {
+        var clueHtml = '';
+        found.forEach(function(id){
+            var type = id[0];
+            var idx = id.substring(1);
+            var name = '';
+            if(type === 'e') { var e = c.evd.find(function(ev){ return ev.id === idx; }); if(e) name = '🔬 ' + e.name; }
+            else if(type === 'p') { var p = c.persons.find(function(pe){ return pe.id === idx; }); if(p) name = '👤 ' + p.name; }
+            else if(type === 'l') { var l = c.places.find(function(pl){ return pl.id === idx; }); if(l) name = '📍 ' + l.name; }
+            clueHtml += '<span class="clue-badge found" style="display:inline-block;margin:2px;">'+(name || id)+'</span>';
+        });
+        cluesContainer.innerHTML = clueHtml + '<div style="margin-top:6px;font-size:12px;color:var(--police-gray);">' + found.length + '/' + total + ' 线索已发现</div>';
+    }
+    
+    var hasAllClues = found.length >= total && total > 0;
+    if(saveData.clear.indexOf(cid) !== -1) {
+        quizContainer.innerHTML = '<span style="color:var(--police-green);">✅ 已办结</span>';
+    } else if(!hasAllClues) {
+        quizContainer.innerHTML = '<span style="color:var(--police-yellow);">🔍 需收集全部 ' + total + ' 条线索</span>';
+    } else {
+        quizContainer.innerHTML = '<span style="color:var(--police-green);">✅ 所有线索已集齐，<a href="#" onclick="switchModule(\'quiz\')" style="color:var(--police-blue);">点击前往结案问答</a></span>';
+    }
+}
+
+// ========== 结案问答 ==========
+function renderQuiz() {
+    var cid = saveData.currentCase;
+    var empty = document.getElementById('quizEmpty');
+    var content = document.getElementById('quizContent');
+    var title = document.getElementById('quizTitle');
+    var submitBtn = document.getElementById('submitQuizBtn');
+    
+    if(cid === -1 || cid === undefined) {
+        empty.style.display = 'block'; 
+        content.innerHTML = ''; 
+        title.textContent = ''; 
+        submitBtn.style.display = 'none';
+        return;
+    }
+    
+    var c = getCase(cid);
+    var found = saveData.foundClues || [];
+    var totalClues = getCaseTotalClues(c);
+    
+    var hasAllClues = found.length >= totalClues && totalClues > 0;
+    
+    if(saveData.clear.indexOf(cid) !== -1) {
+        empty.style.display = 'block';
+        empty.innerHTML = '✅ 该案件已办结归档';
+        empty.style.color = 'var(--police-green)';
+        content.innerHTML = '';
+        submitBtn.style.display = 'none';
+        title.textContent = '— '+c.title+' ✅ 已办结';
+        return;
+    }
+    
+    title.textContent = '— '+c.title + ' (' + found.length + '/' + totalClues + ' 线索)';
+    
+    if(!hasAllClues) {
+        empty.style.display = 'block';
+        empty.innerHTML = '🔍 需要收集全部 ' + totalClues + ' 条线索才能开始结案问答。当前已收集 ' + found.length + ' 条。';
+        empty.style.color = 'var(--police-yellow)';
+        content.innerHTML = '';
+        submitBtn.style.display = 'none';
+        return;
+    }
+    
+    empty.style.display = 'none';
+    submitBtn.style.display = 'block';
+    
+    if(!saveData.quizAnswers) saveData.quizAnswers = {};
+    if(!saveData.quizAnswers[cid]) saveData.quizAnswers[cid] = {};
+    var answers = saveData.quizAnswers[cid] || {};
+    
+    var html = '<div style="margin-bottom:12px;color:var(--police-green);font-weight:bold;">✅ 所有线索已集齐！请回答以下问题完成结案：</div>';
+    
+    c.quiz.forEach(function(q, idx){
+        html += '<div style="margin:16px 0;padding:14px;background:#f5faff;border-radius:6px;"><div style="font-weight:bold;margin-bottom:8px;">'+(idx+1)+'. '+q.q+'</div>';
+        q.options.forEach(function(opt, oi){
+            var selected = answers[idx] === oi;
+            var isCorrect = q.correct === oi;
+            var cls = 'quiz-option';
+            if(selected && isCorrect) cls += ' correct';
+            else if(selected && !isCorrect) cls += ' wrong';
+            else if(selected) cls += ' selected';
+            html += '<div class="'+cls+'" onclick="selectQuizAnswer('+cid+','+idx+','+oi+')">'+String.fromCharCode(65+oi)+'. '+opt+(selected && isCorrect ? ' ✅' : '')+(selected && !isCorrect ? ' ❌' : '')+'</div>';
+        });
+        html += '</div>';
+    });
+    content.innerHTML = html;
+}
+
+function selectQuizAnswer(cid, qIdx, optIdx) {
+    if(!saveData.quizAnswers) saveData.quizAnswers = {};
+    if(!saveData.quizAnswers[cid]) saveData.quizAnswers[cid] = {};
+    saveData.quizAnswers[cid][qIdx] = optIdx;
+    saveProgress();
+    renderQuiz();
+    renderParallel();
+}
+
+function submitQuiz() {
+    var cid = saveData.currentCase;
+    if(cid === -1) { alert('请先打开卷宗'); return; }
+    var c = getCase(cid);
+    var answers = saveData.quizAnswers[cid] || {};
+    var correct = 0;
+    c.quiz.forEach(function(q, idx){
+        if(answers[idx] === q.correct) correct++;
+    });
+    if(correct < c.quiz.length) {
+        alert('❌ 回答错误 '+(c.quiz.length - correct)+' 题，请重新检查线索。');
+        return;
+    }
+    if(saveData.clear.indexOf(cid) !== -1) { alert('该案件已办结。'); return; }
+    saveData.clear.push(cid);
+    if(parseInt(cid) + 1 < CASE_TOTAL) saveData.unlock[parseInt(cid) + 1] = true;
+    saveProgress();
+    alert('🎉 所有问题回答正确！结案报告已生成。下一案件已解锁。');
+    switchModule('report');
+    renderReport();
+}
+
+function renderReport() {
+    var cid = saveData.currentCase;
+    var empty = document.getElementById('reportEmpty');
+    var reportDiv = document.getElementById('finalReport');
+    if(cid === -1 || cid === undefined) {
+        empty.style.display = 'block'; reportDiv.classList.remove('show'); reportDiv.innerHTML = '';
+        return;
+    }
+    var c = getCase(cid);
+    if(saveData.clear.indexOf(cid) === -1) {
+        empty.style.display = 'block'; reportDiv.classList.remove('show'); reportDiv.innerHTML = '';
+        return;
+    }
+    empty.style.display = 'none';
+    reportDiv.className = 'conclusion-box show';
+    var r = c.report;
+    reportDiv.innerHTML = '<div style="font-weight:bold;font-size:18px;color:var(--police-green);margin-bottom:12px;">📄 结案报告</div>'+
+        '<div style="border-bottom:1px dashed var(--police-border);padding-bottom:12px;margin-bottom:12px;"><div style="font-size:15px;font-weight:bold;">'+c.title+'</div></div>'+
+        '<div style="margin-bottom:10px;"><strong>👤 真凶：</strong>'+r.culprit+'</div>'+
+        '<div style="margin-bottom:10px;"><strong>🎯 作案动机：</strong>'+r.motive+'</div>'+
+        '<div style="background:#f5faff;border:1px solid var(--police-border);border-radius:4px;padding:14px;margin-top:10px;"><strong>📋 案件综述：</strong><div style="margin-top:6px;line-height:1.8;">'+r.summary+'</div></div>'+
+        '<div style="margin-top:14px;color:var(--police-green);font-weight:bold;font-size:15px;">🎉 卷宗已办结归档！'+(parseInt(cid)+1 < CASE_TOTAL ? '下一卷宗已解锁。' : '全部案件已办结！')+'</div>';
+    renderArchive();
+    updateProgress();
+    renderParallel();
+}
+
+// ========== 线索总览 ==========
+function renderOverview() {
+    var container = document.getElementById('clueOverviewContainer');
+    var html = '';
+    for(var key in caseDB) {
+        var c = caseDB[key];
+        html += '<div class="clue-overview-card">';
+        html += '<div class="case-name">['+c.series+'] '+c.title+'</div>';
+        html += '<div style="font-size:12px;color:var(--police-gray);margin-bottom:6px;">📌 '+c.desc+'</div>';
+        if(c.evd && c.evd.length > 0) {
+            html += '<div style="font-weight:bold;font-size:12px;color:var(--police-blue);margin-top:6px;">🔬 物证：</div>';
+            c.evd.forEach(function(e){
+                html += '<div class="clue-item"><span class="clue-tag clue-tag-evd">物证</span> '+e.name+' — '+e.desc+'</div>';
+            });
+        }
+        if(c.persons && c.persons.length > 0) {
+            html += '<div style="font-weight:bold;font-size:12px;color:var(--police-blue);margin-top:6px;">👤 人物：</div>';
+            c.persons.forEach(function(p){
+                html += '<div class="clue-item"><span class="clue-tag clue-tag-person">人物</span> '+p.name+'（'+p.role+'）— '+p.desc+'</div>';
+            });
+        }
+        if(c.places && c.places.length > 0) {
+            html += '<div style="font-weight:bold;font-size:12px;color:var(--police-blue);margin-top:6px;">📍 地点：</div>';
+            c.places.forEach(function(l){
+                html += '<div class="clue-item"><span class="clue-tag clue-tag-place">地点</span> '+l.name+' — '+l.desc+'</div>';
+            });
+        }
+        if(c.quiz && c.quiz.length > 0) {
+            html += '<div style="font-weight:bold;font-size:12px;color:var(--police-green);margin-top:6px;">✅ 结案问答答案：</div>';
+            c.quiz.forEach(function(q){
+                var answerText = q.options[q.correct];
+                html += '<div class="quiz-answer">• '+q.q+' → <strong>'+answerText+'</strong></div>';
+            });
+        }
+        html += '</div>';
+    }
+    container.innerHTML = html;
+}
+
+// ========== 同步存档 ==========
+function refreshLocalSave() {
+    var stored = localStorage.getItem('policeCaseArchiveSave');
+    if(stored) {
+        var parsed = JSON.parse(stored);
+        saveData.unlock = parsed.unlock || [true, false, false, false, false, false, false];
+        saveData.clear = parsed.clear || [];
+        saveData.currentCase = parsed.currentCase !== undefined ? parsed.currentCase : -1;
+        saveData.foundClues = parsed.foundClues || [];
+        saveData.quizAnswers = parsed.quizAnswers || {};
+        saveData.interrogateProgress = parsed.interrogateProgress || {};
+        saveData.chatHistory = parsed.chatHistory || [];
+        saveData.interrogationLog = parsed.interrogationLog || [];
+    } else {
+        saveData = {
+            unlock: [true, false, false, false, false, false, false],
+            clear: [],
+            currentCase: -1,
+            foundClues: [],
+            quizAnswers: {},
+            interrogateProgress: {},
+            chatHistory: [],
+            interrogationLog: []
+        };
+    }
+    while(saveData.unlock.length < CASE_TOTAL) saveData.unlock.push(false);
+    currentCID = saveData.currentCase;
+    currentCaseData = currentCID !== -1 ? getCase(currentCID) : null;
+    renderArchive(); renderFinished(); renderSearch(); renderClues(); renderInterrogateRoom(); renderInterrogationChat(); renderArchiveInterrogationChat(); renderChatRoom(); renderQuiz(); renderReport(); renderOverview(); renderParallel();
+    updateProgress();
+    alert('✅ 已同步本地存档。');
+}
+
+function clearAllSave() {
+    if(!confirm('⚠️ 确定重置全部办案进度？此操作不可撤销！')) return;
+    localStorage.removeItem('policeCaseArchiveSave');
+    saveData = { unlock: [true, false, false, false, false, false, false], clear: [], currentCase: -1, foundClues: [], quizAnswers: {}, interrogateProgress: {}, chatHistory: [], interrogationLog: [] };
+    currentCID = -1; currentCaseData = null;
+    renderArchive(); renderFinished(); renderSearch(); renderClues(); renderInterrogateRoom(); renderInterrogationChat(); renderArchiveInterrogationChat(); renderChatRoom(); renderQuiz(); renderReport(); renderOverview(); renderParallel();
+    updateProgress();
+    alert('已重置全部进度。');
+}
+
+// ===== 初始化 =====
+renderArchive();
+updateProgress();
+if(saveData.currentCase !== -1 && saveData.currentCase !== undefined) {
+    currentCID = saveData.currentCase;
+    currentCaseData = getCase(currentCID);
+}
+renderSearch();
+renderClues();
+renderInterrogateRoom();
+renderInterrogationChat();
+renderArchiveInterrogationChat();
+renderChatRoom();
+renderQuiz();
+renderReport();
+renderParallel();
+</script>
+</body>
+</html>
